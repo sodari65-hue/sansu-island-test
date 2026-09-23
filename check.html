@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>さんすうアイランド 問題チェック</title>
+<style>
+  :root{
+    --bg:#f6f8fb; --card:#fff; --ink:#1d2733; --sub:#5d6b7d; --line:#dde5ee;
+    --accent:#2f7fd4; --ok:#1a8b52; --ng:#c8385a; --warn:#b8791a;
+    --okbg:#e8f7ef; --ngbg:#fdecf0;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,system-ui,sans-serif;
+    font-size:16px;line-height:1.7}
+  header{position:sticky;top:0;z-index:10;background:#fff;border-bottom:1px solid var(--line);
+    padding:10px 16px;box-shadow:0 1px 4px rgba(0,0,0,.05)}
+  h1{margin:0 0 6px;font-size:18px}
+  .bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+  select,input[type=search]{font:inherit;padding:6px 8px;border:1px solid var(--line);
+    border-radius:8px;background:#fff;color:inherit}
+  button{font:inherit;padding:7px 12px;border:1px solid var(--line);border-radius:8px;
+    background:#fff;color:inherit;cursor:pointer}
+  button:hover{background:#f0f4f9}
+  button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+  button.primary:hover{filter:brightness(1.08)}
+  .prog{font-size:13px;color:var(--sub);margin-left:auto;white-space:nowrap}
+  main{padding:16px;max-width:1040px;margin:0 auto}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;
+    padding:14px 16px;margin-bottom:12px}
+  .card[data-v="ok"]{background:var(--okbg);border-color:#a9dcc1}
+  .card[data-v="ng"]{background:var(--ngbg);border-color:#f0b4c3}
+  .meta{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:12px;color:var(--sub);margin-bottom:6px}
+  .tag{border:1px solid var(--line);border-radius:999px;padding:1px 8px;background:#fff}
+  .q{font-size:19px;margin:4px 0 10px}
+  .choices{list-style:none;padding:0;margin:0 0 8px}
+  .choices li{padding:4px 10px;border:1px solid var(--line);border-radius:8px;background:#fff;
+    margin-bottom:4px;display:inline-block;margin-right:6px}
+  .choices li.correct{border-color:var(--ok);background:#eaf8f0;font-weight:700}
+  .ans{font-weight:700;color:var(--ok)}
+  .hint{font-size:14px;color:var(--sub)}
+  .acts{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:10px}
+  .note{flex:1 1 260px;min-width:200px;font:inherit;padding:6px 8px;border:1px solid var(--line);
+    border-radius:8px}
+  ruby rt{font-size:.55em;color:var(--sub)}
+  .empty{padding:40px;text-align:center;color:var(--sub)}
+  .load{background:#fff8e6;border:1px solid #f0dca6;border-radius:12px;padding:16px;margin-bottom:16px}
+  .load p{margin:0 0 8px}
+  .steps{margin:0;padding-left:1.2em}
+  .steps li{margin-bottom:8px}
+  table{border-collapse:collapse;margin:6px 0;font-size:14px}
+  th,td{border:1px solid var(--line);padding:3px 10px;background:#fff}
+  code{background:#eef2f7;padding:1px 5px;border-radius:4px;font-size:13px}
+  .audit{padding:10px 14px;border-left:4px solid #da9a36;background:#fff9eb;margin-bottom:14px}
+  .audit.error{border-color:#b63838;background:#fff0ee}
+  .audit p{margin:4px 0}.audit ul{margin:5px 0;padding-left:22px}
+  .reviewBar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:14px 0}
+  .reviewBar button{min-height:44px}.card:focus{outline:3px solid #2766ae;outline-offset:3px}
+  #summary{padding:12px 16px;background:#eaf1fa;border-radius:10px}
+  #message{color:#963b19;min-height:1.4em}button:disabled{opacity:.5;cursor:default}
+</style>
+</head>
+<body>
+<header>
+  <h1>さんすうアイランド 問題チェック</h1>
+  <p><a href="encounter-preview.html">ボス・ダンジョンを試遊（本編の保存なし）</a></p>
+  <div class="bar">
+    <select id="fGrade"><option value="">学年：すべて</option></select>
+    <select id="fDomain"><option value="">領域：すべて</option></select>
+    <select id="fState">
+      <option value="">判定：すべて</option>
+      <option value="none">未判定</option>
+      <option value="ok">OK</option>
+      <option value="ng">要修正</option>
+      <option value="stale">再確認（内容変更・旧判定）</option>
+    </select>
+    <select id="fKind" aria-label="問題の種類"><option value="">種類：すべて</option><option value="q">敵の問題</option><option value="quest">クエスト</option><option value="boss">ボス</option><option value="dungeon">ダンジョン</option></select>
+    <select id="fUnit" aria-label="単元"><option value="">単元：すべて</option></select>
+    <select id="fAttention" aria-label="確認ポイント"><option value="">確認ポイント：すべて</option><option value="error">エラーあり</option><option value="attention">確認ポイントあり</option></select>
+    <select id="fSort" aria-label="並び順"><option value="priority">確認優先順</option><option value="id">問題ID順</option><option value="group">単元・同型グループ順</option></select>
+    <input type="search" id="fText" placeholder="ことばで さがす">
+    <label><input type="checkbox" id="ruby" checked> ふりがな</label>
+    <button id="btnExport" class="primary">判定を書き出す</button>
+    <button id="btnImport">判定を読みこむ</button>
+    <input type="file" id="fileReview" accept=".json" hidden>
+    <span class="prog" id="prog"></span>
+  </div>
+</header>
+
+<main>
+  <noscript>確認画面には JavaScript が必要です。</noscript>
+  <p id="summary" role="status">問題を読み込んでいます…</p>
+  <p class="hint">計算の再確認は単純な二項式のみ。警告がなくても、条件・学年・誤答・ヒントは先生が確認してください。</p>
+  <div class="reviewBar">
+    <button id="preset">5年の未確認から始める</button>
+    <label><input type="checkbox" id="one" checked> 1件ずつ確認</label>
+    <button id="prev">前へ</button><span id="position"></span><button id="next">次へ</button>
+    <button id="nextPending">次の未確認へ</button>
+    <label><input type="checkbox" id="advance" checked> 判定後に次へ</label>
+    <span class="hint">1件表示中：J 次／K 前／O OK／N 要修正（メモ入力中は無効）</span>
+  </div>
+  <p id="message" role="status" aria-live="polite"></p>
+  <div class="load" id="loadBox" hidden>
+    <p><strong>データを読みこめませんでした。</strong>この画面はローカルサーバーから開いてください。</p>
+    <p>下のボタンで <code>data/questions</code> と <code>data/quests</code> の JSON をまとめて選ぶか、フォルダごとここにドラッグしてください。</p>
+    <p>（または <code>python -m http.server</code> を実行して <code>http://localhost:8000/check.html</code> をひらく）</p>
+    <input type="file" id="fileData" accept=".json" multiple>
+  </div>
+  <div id="list"></div>
+</main>
+
+<script src="./src/review-core.js"></script>
+<script>
+(function(){
+  'use strict';
+  const { contentHash, isChecked, reviewState, reviewItems, parseReview, auditItems } = globalThis.SansuReview;
+  const $ = (s) => document.querySelector(s);
+  const LS_KEY = 'sansu-island:review';
+
+  const GRADES = [1,2,3,4,5,6];
+  const DOMAINS = [['A','数と計算'],['B','図形'],['C','測定／変化と関係'],['D','データの活用']];
+
+  let items = [];            // { kind:'q'|'quest', ...  }
+  let review = load();
+  let audits = new Map();
+  let cursor = 0;
+  const stateOf = it => reviewState(it, review[it.id]);
+  const message = text => { $('#message').textContent = text; };
+
+  function load(){
+    try { return parseReview(JSON.parse(localStorage.getItem(LS_KEY) || '{}')); }
+    catch(_) { return {}; }
+  }
+  function save(){
+    try { localStorage.setItem(LS_KEY, JSON.stringify(review)); }
+    catch(_) { message('このブラウザに判定を保存できません。「判定を書き出す」で保存してください。'); }
+  }
+
+  // {漢字|よみ} → <ruby>漢字<rt>よみ</rt></ruby>
+  function esc(s){
+    return String(s).replace(/[&<>"]/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  }
+  function ruby(text){
+    const on = $('#ruby').checked;
+    return esc(text).replace(/\{([^{}|]+)\|([^{}|]+)\}/g,
+      (_, k, y) => on ? `<ruby>${k}<rt>${y}</rt></ruby>` : k);
+  }
+  function plain(text){
+    return String(text).replace(/\{([^{}|]+)\|[^{}|]+\}/g, '$1');
+  }
+
+  function speak(text){
+    if (!('speechSynthesis' in window)) return;
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(plain(text));
+    u.lang = 'ja-JP'; u.rate = 0.95;
+    speechSynthesis.speak(u);
+  }
+
+  // ---- 読みこみ --------------------------------------------------------
+  async function tryFetch(){
+    const files = [];
+    for (const g of GRADES) for (const [d] of DOMAINS) files.push(['q', `data/questions/g${g}-${d}.json`]);
+    for (const g of GRADES) files.push(['quest', `data/quests/g${g}.json`]);
+    const out = [];
+    for (const [kind, path] of files){
+      const res = await fetch(path, { cache: 'no-store' });
+      if (!res.ok) throw new Error(path);
+      out.push([kind, await res.json()]);
+    }
+    // ボスとダンジョン（あるものだけ）
+    const opt = async (p) => { try { const r = await fetch(p, { cache: 'no-store' }); return r.ok ? await r.json() : null; } catch(_) { return null; } };
+    const bosses = await opt('data/bosses.json');
+    for (const b of (bosses?.bosses || []).filter((b) => b.file)){
+      const d = await opt('data/' + b.file); if (d) out.push(['boss', d]);
+    }
+    const unlocks = await opt('config/unlocks.json');
+    const dIds = [...new Set(Object.values(unlocks?.bossUnlock || {}).map((u) => u.requireDungeon).filter(Boolean))];
+    for (const id of dIds){ const d = await opt(`data/dungeons/${id}.json`); if (d) out.push(['dungeon', d]); }
+    return out;
+  }
+
+  function absorb(kind, data){
+    items.push(...reviewItems(data));
+  }
+
+  function sortItems(){
+    items.sort((a,b) => (a.grade - b.grade) || String(a.id).localeCompare(String(b.id)));
+    audits = auditItems(items);
+    $('#fUnit').innerHTML = '<option value="">単元：すべて</option>';
+    [...new Set(items.flatMap(q => q.units || (q.unit ? [q.unit] : [])))].sort().forEach(u => {
+      const option = document.createElement('option'); option.value = u; option.textContent = u; $('#fUnit').append(option);
+    });
+    cursor = 0;
+  }
+
+  async function boot(){
+    try {
+      const loaded = await tryFetch();
+      loaded.forEach(([kind, data]) => absorb(kind, data));
+      sortItems(); render();
+    } catch(e) {
+      $('#loadBox').hidden = false;
+      message('読み込みに失敗しました：' + e.message);
+      $('#summary').textContent = 'データを読み込めていません。';
+    }
+  }
+
+  function readFiles(fileList){
+    items = [];
+    let left = fileList.length;
+    if (!left) return;
+    Array.from(fileList).forEach((f) => {
+      const r = new FileReader();
+      r.onload = () => {
+        try {
+          const data = JSON.parse(r.result);
+          absorb(Array.isArray(data.quests) ? 'quest' : 'q', data);
+        } catch(e){ console.warn(f.name, e); }
+        if (--left === 0){ sortItems(); $('#loadBox').hidden = true; render(); }
+      };
+      r.readAsText(f, 'utf-8');
+    });
+  }
+
+  $('#fileData').addEventListener('change', (e) => readFiles(e.target.files));
+  ['dragover','drop'].forEach((ev) => document.addEventListener(ev, (e) => {
+    e.preventDefault();
+    if (ev === 'drop') readFiles(e.dataTransfer.files);
+  }));
+
+  // ---- 描画 ------------------------------------------------------------
+  function visible(){
+    const g = $('#fGrade').value, d = $('#fDomain').value, s = $('#fState').value;
+    const t = $('#fText').value.trim();
+    return items.filter((it) => {
+      if (g && String(it.grade) !== g) return false;
+      if (d && it.domain !== d) return false;
+      const v = stateOf(it);
+      if (s && (s === 'none' ? !['none', 'stale'].includes(v) : v !== s)) return false;
+      if ($('#fKind').value && it.kind !== $('#fKind').value) return false;
+      if ($('#fUnit').value && it.unit !== $('#fUnit').value && !it.units?.includes($('#fUnit').value)) return false;
+      const issues = audits.get(it.id)?.issues || [];
+      if ($('#fAttention').value === 'attention' && !issues.length) return false;
+      if ($('#fAttention').value === 'error' && !issues.some(i => i.severity === 'error')) return false;
+      if (t){
+        const hay = plain(JSON.stringify(it));
+        if (!hay.includes(t)) return false;
+      }
+      return true;
+    }).sort((a,b) => {
+      if ($('#fSort').value === 'priority') return (audits.get(b.id)?.score || 0) - (audits.get(a.id)?.score || 0) || a.id.localeCompare(b.id);
+      if ($('#fSort').value === 'group') return `${a.unit || ''}:${a.variantGroup || ''}`.localeCompare(`${b.unit || ''}:${b.variantGroup || ''}`) || a.id.localeCompare(b.id);
+      return a.id.localeCompare(b.id);
+    });
+  }
+
+  function questionCard(it){
+    const r = review[it.id] || {};
+    let body = '';
+    if (it.type === 'choice'){
+      body = '<ul class="choices">' + it.choices.map((c,i) =>
+        `<li class="${i===it.answer?'correct':''}">${ruby(c)}${i===it.answer?' ◀ 正解':''}</li>`).join('') + '</ul>';
+    } else {
+      body = `<p class="ans">答え：${it.answer}${it.unitLabel ? ' ' + it.unitLabel : ''}</p>`;
+    }
+    return `
+      <div class="meta">
+        <span class="tag">${it.id}</span>
+        <span class="tag">${it.grade}年 ${it.domainName || it.domain}</span>
+        <span class="tag">${esc(it.unit)}</span>
+        <span class="tag">レベル${it.level}</span>
+        <span class="tag">${it.type === 'choice' ? '選択' : '数値入力'}</span>
+      </div>
+      <p class="q">${ruby(it.text)}</p>
+      ${it.variantGroup ? `<p class="hint">同型グループ：${esc(it.variantGroup)}</p>` : ''}
+      ${body}
+      <p class="hint">ヒント：${ruby(it.hint)}</p>
+      <div class="acts">
+        <button data-act="speak">🔊 読み上げ</button>
+        <button data-act="ok">OK</button>
+        <button data-act="ng">要修正</button>
+        <input class="note" data-act="note" placeholder="直したいこと（メモ）" value="${esc(r.note || '')}">
+      </div>`;
+  }
+
+
+  // 答え＋理由の2段階選択（クエスト・ダンジョン・ボスで共通）
+  function twoStepHtml(s, textKey){
+    const hints = (obj) => obj ? Object.entries(obj).map(([k, v]) =>
+      `<li>「${ruby(s.choices?.[k] ?? s.reasons?.[k] ?? '?')}」を えらんだとき：${ruby(v)}</li>`).join('') : '';
+    const rh = (obj) => obj ? Object.entries(obj).map(([k, v]) =>
+      `<li>「${ruby(s.reasons[k])}」を えらんだとき：${ruby(v)}</li>`).join('') : '';
+    return `${textKey ? `<p class="q">${ruby(s[textKey])}</p>` : ''}
+      <p class="hint">① 答え</p>
+      <ul class="choices">${s.choices.map((c, i) => `<li class="${i === s.answer ? 'correct' : ''}">${ruby(c)}${i === s.answer ? ' ◀ 正解' : ''}</li>`).join('')}</ul>
+      ${s.hints ? `<ul class="hint">${hints(s.hints)}</ul>` : ''}
+      <p class="hint">② 理由</p>
+      <ul class="choices">${s.reasons.map((c, i) => `<li class="${i === s.reasonAnswer ? 'correct' : ''}">${ruby(c)}${i === s.reasonAnswer ? ' ◀ 正解' : ''}</li>`).join('')}</ul>
+      ${s.reasonHints ? `<ul class="hint">${rh(s.reasonHints)}</ul>` : ''}
+      ${s.hint ? `<p class="hint">共通ヒント：${ruby(s.hint)}</p>` : ''}
+      ${s.say ? `<p class="hint">せりふ：${ruby(s.say)}</p>` : ''}
+      ${s.feedback || s.ok ? `<p class="hint">正解後の解説：${ruby(s.feedback || s.ok)}</p>` : ''}`;
+  }
+
+  function bossCard(it){
+    const r = review[it.id] || {};
+    const stages = it.stages.map((s, i) => {
+      if (s.kind === 'twoStep') return `<li><strong>[答え＋理由]</strong>${twoStepHtml(s, 'text')}</li>`;
+      if (s.kind === 'level'){
+        const goal = s.columns.reduce((a, v) => a + v, 0) / s.columns.length;
+        return `<li><strong>[ならす]</strong> ${ruby(s.say)}<p>${ruby(s.text)}</p>
+          <p class="ans">列の高さ：${s.columns.join('・')}${esc(s.unit || '')} → ぜんぶ ${goal}${esc(s.unit || '')} にすると正解</p>
+          <p class="hint">ヒント：${ruby(s.hint)}／正解のとき：${ruby(s.ok)}</p></li>`;
+      }
+      if (s.kind === 'bar') return `<li><strong>[テープ]</strong> ${ruby(s.say)}<p>${ruby(s.text)}</p>
+          <p class="ans">めもり ${s.total} こ のうち ${s.answer} こ で正解</p>
+          <p class="hint">ヒント：${ruby(s.hint)}／正解のとき：${ruby(s.ok)}</p></li>`;
+      if (s.kind === 'fraction' || s.kind === 'angles') return `<li><strong>[${s.kind === 'fraction' ? '等しい分数' : '角を集める'}]</strong> ${ruby(s.say)}<p>${ruby(s.text)}</p>
+          <p class="ans">${s.kind === 'fraction' ? `${s.numerator}/${s.denominator} ＝ ${s.answer}/${s.targetDenominator}（2本とも全体が1）` : `${s.angles.join('° ＋ ')}° ＝ ${s.answer}°（角度を変えずに並べる）`}</p>
+          <p class="hint">ヒント：${ruby(s.hint)}／正解のとき：${ruby(s.ok)}</p></li>`;
+      return `<li>${esc(s.kind)}</li>`;
+    }).join('');
+    return `
+      <div class="meta">
+        <span class="tag">${it.id}</span><span class="tag">${it.grade}年 ${it.domain}</span>
+        <span class="tag">ボス</span><span class="tag">概念的な理解</span>
+      </div>
+      <p class="q">${ruby(it.name)}</p>
+      <p class="hint">さいしょの まちがった考え：${ruby(it.taunt)}</p>
+      <ol class="steps">${stages}</ol>
+      <p class="hint">たおしたあと：${it.beaten.map(ruby).join(' ／ ')}</p>
+      <div class="acts">
+        <button data-act="speak">🔊 読み上げ</button>
+        <button data-act="ok">OK</button>
+        <button data-act="ng">要修正</button>
+        <input class="note" data-act="note" placeholder="直したいこと（メモ）" value="${esc(r.note || '')}">
+      </div>`;
+  }
+
+  function dungeonCard(it){
+    const r = review[it.id] || {};
+    const seq = it.sequence.map((s) => s === 'knowledge' ? '知識（敵と同じ山札から）' : '考える：' + s.slice(9)).join(' → ');
+    const th = (it.thinking || []).map((t) => `<li><strong>${esc(t.id)}</strong>${twoStepHtml(t, 'text')}</li>`).join('');
+    return `
+      <div class="meta">
+        <span class="tag">${it.id}</span><span class="tag">${it.grade}年 ${it.domain}</span>
+        <span class="tag">ダンジョン</span>
+      </div>
+      <p class="q">${ruby(it.name)}</p>
+      <p class="hint">順番：${esc(seq)}</p>
+      <p class="hint">知識の問題は ${esc((it.knowledgeFrom || []).join('・'))} の山札から出ます（そちらは 1問ずつ 確認ずみのものだけ）。ここで OK にするのは、下の「考える」問題です。</p>
+      <ol class="steps">${th}</ol>
+      <div class="acts">
+        <button data-act="speak">🔊 読み上げ</button>
+        <button data-act="ok">OK</button>
+        <button data-act="ng">要修正</button>
+        <input class="note" data-act="note" placeholder="直したいこと（メモ）" value="${esc(r.note || '')}">
+      </div>`;
+  }
+
+  function questCard(it){
+    const r = review[it.id] || {};
+    const steps = it.steps.map((s) => {
+      let ans = '';
+      if (s.kind === 'select') ans = `正解：${plain(s.choices[s.answer])}`;
+      else if (s.kind === 'multi') ans = `正解：${s.answer.map((a) => plain(s.choices[a])).join(' / ')}`;
+      else if (s.kind === 'order') ans = `正しい順：${s.answer.map((a) => plain(s.choices[a])).join(' → ')}`;
+      else if (s.kind === 'twoStep') ans = '';
+      else ans = `答え：${s.answer}${s.unitLabel ? ' ' + s.unitLabel : ''}`;
+      let table = '';
+      if (s.dataTable){
+        table = '<table><tr>' + s.dataTable.head.map((h) => `<th>${ruby(h)}</th>`).join('') + '</tr>' +
+          s.dataTable.rows.map((row) => '<tr>' + row.map((c) => `<td>${ruby(c)}</td>`).join('') + '</tr>').join('') + '</table>';
+      }
+      if (s.kind === 'twoStep') return `<li><strong>[答え＋理由]</strong> ${ruby(s.prompt)}${table}${twoStepHtml(s)}</li>`;
+      return `<li><strong>[${s.kind}]</strong> ${ruby(s.prompt)}${table}
+        ${s.choices ? `<ul class="choices">${s.choices.map((c, i) => `<li>${i + 1}. ${ruby(c)}</li>`).join('')}</ul>` : ''}
+        <div class="ans">${esc(ans)}</div><div class="hint">ヒント：${ruby(s.hint || '（なし）')}<br>正解後の解説：${ruby(s.feedback || '（なし）')}</div></li>`;
+    }).join('');
+    return `
+      <div class="meta">
+        <span class="tag">${it.id}</span>
+        <span class="tag">${it.grade}年 ${it.domain}</span>
+        <span class="tag">クエスト</span>
+        <span class="tag">${esc(it.units.join('・'))}</span>
+      </div>
+      <p class="q">${ruby(it.title)}</p>
+      <p class="hint">依頼人：${ruby(it.giver)}／ミッション：${ruby(it.mission)}</p>
+      <p>${ruby(it.intro)}</p>
+      <ol class="steps">${steps}</ol>
+      <p class="hint">むすび：${ruby(it.outro)}</p>
+      <div class="acts">
+        <button data-act="speak">🔊 読み上げ</button>
+        <button data-act="ok">OK</button>
+        <button data-act="ng">要修正</button>
+        <input class="note" data-act="note" placeholder="直したいこと（メモ）" value="${esc(r.note || '')}">
+      </div>`;
+  }
+
+  function render(){
+    const list = $('#list');
+    const vis = visible();
+    cursor = Math.max(0, Math.min(cursor, vis.length - 1));
+    $('#position').textContent = vis.length ? `${cursor + 1} / ${vis.length}件` : '0件';
+    $('#prev').disabled = cursor === 0 || !$('#one').checked;
+    $('#next').disabled = cursor >= vis.length - 1 || !$('#one').checked;
+    const shown = $('#one').checked ? vis.slice(cursor, cursor + 1) : vis;
+    $('#summary').textContent = `絞り込み ${vis.length}件 ／ 確認ポイントあり ${vis.filter(q => audits.get(q.id)?.issues.length).length}件 ／ 再計算できた問題 ${vis.reduce((n,q) => n + (audits.get(q.id)?.calculations.length || 0), 0)}問`;
+    list.innerHTML = '';
+    if (!items.length){ list.innerHTML = '<p class="empty">データがありません。</p>'; updateProg(); return; }
+    if (!vis.length){ list.innerHTML = '<p class="empty">条件に合う問題がありません。</p>'; updateProg(); return; }
+
+    const frag = document.createDocumentFragment();
+    shown.forEach((it) => {
+      const el = document.createElement('div');
+      el.className = 'card';
+      el.dataset.id = it.id;
+      el.tabIndex = -1;
+      const v = stateOf(it);
+      if (v) el.dataset.v = v;
+      el.innerHTML = it.kind === 'quest' ? questCard(it) : it.kind === 'boss' ? bossCard(it) : it.kind === 'dungeon' ? dungeonCard(it) : questionCard(it);
+      const a = audits.get(it.id);
+      const block = document.createElement('div');
+      block.className = 'audit' + (a.issues.some(i => i.severity === 'error') ? ' error' : '');
+      const labels = { ok:'OK', ng:'要修正', none:'未確認', stale:'再確認（内容変更・旧形式の判定）' };
+      block.innerHTML = `<p><strong>${labels[v]}</strong> ／ ゲーム用データ：${isChecked(it) ? '確認ずみ' : '未確認・要再確認'}</p>` +
+        (a.issues.length ? `<ul>${a.issues.map(i => `<li>${i.severity === 'error' ? 'エラー：' : '確認：'}${esc(i.message)}</li>`).join('')}</ul>` : '<p>自動検査で指摘はありません。内容の確認は必要です。</p>') +
+        a.calculations.map(c => `<p>再計算：${esc(c.expression)} = ${Number(c.value.toPrecision(12))}（${c.matches ? '登録正答と一致' : '不一致'}）</p>`).join('');
+      el.prepend(block);
+      el.querySelector('[data-act="ok"]').disabled = a.issues.some(i => i.severity === 'error' && i.code !== 'stale');
+      if (review[it.id]?.verdict){
+        const undo = document.createElement('button');
+        undo.textContent = '今回の判定を取り消す'; undo.dataset.act = 'undo';
+        el.querySelector('.acts').append(undo);
+      }
+      el.addEventListener('click', (e) => {
+        const act = e.target.dataset && e.target.dataset.act;
+        if (!act) return;
+        if (act === 'undo'){
+          const cur = review[it.id] || {};
+          review[it.id] = cur.note ? { note: cur.note } : {};
+          save(); render(); return;
+        }
+        if (act === 'speak'){
+          speak(it.kind === 'quest' ? it.title + '。' + it.mission : it.kind === 'boss' ? it.taunt : it.kind === 'dungeon' ? it.name : it.text);
+          return;
+        }
+        if (act === 'ok' || act === 'ng'){
+          if (act === 'ok' && a.issues.some(i => i.severity === 'error' && i.code !== 'stale')) return;
+          const cur = review[it.id] || {};
+          cur.verdict = act;
+          cur.contentHash = contentHash(it);
+          cur.reviewedAt = new Date().toISOString();
+          review[it.id] = cur;
+          save();
+          if ($('#one').checked && $('#advance').checked){
+            const after = visible();
+            const current = after.findIndex(q => q.id === it.id);
+            cursor = current >= 0 ? Math.min(current + 1, after.length - 1) : Math.min(cursor, after.length - 1);
+          }
+          render();
+        }
+      });
+      el.addEventListener('input', (e) => {
+        if (e.target.dataset.act !== 'note') return;
+        const cur = review[it.id] || {};
+        cur.note = e.target.value;
+        review[it.id] = cur;
+        save();
+      });
+      frag.appendChild(el);
+    });
+    list.appendChild(frag);
+    updateProg();
+  }
+
+  function updateProg(){
+    const total = items.length;
+    let ok = 0, ng = 0, stale = 0;
+    items.forEach((it) => {
+      const v = stateOf(it);
+      if (v === 'ok') ok++; else if (v === 'ng') ng++;
+      else if (v === 'stale') stale++;
+    });
+    $('#prog').textContent = `${total}件中　OK ${ok}／要修正 ${ng}／再確認 ${stale}／未判定 ${total - ok - ng - stale}`;
+  }
+
+  // ---- 書き出し・読みこみ ---------------------------------------------
+  $('#btnExport').addEventListener('click', () => {
+    const out = {};
+    Object.keys(review).forEach((id) => {
+      const r = review[id];
+      const item = items.find(q => q.id === id);
+      if (!item) return;
+      if (r.verdict && stateOf(item) !== 'stale') out[id] = r;
+      else if ((r.note || '').trim()) out[id] = { note: r.note };
+    });
+    const skipped = items.filter(it => review[it.id]?.verdict && stateOf(it) === 'stale').length;
+    message(`有効な判定を書き出しました。再確認が必要な ${skipped}件の判定は除外しました。ゲームへの反映には apply-review.mjs を実行してください。`);
+    const blob = new Blob([JSON.stringify({ version:2, savedAt:new Date().toISOString(), review: out }, null, 2)],
+      { type:'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'review.json';
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  });
+
+  $('#btnImport').addEventListener('click', () => $('#fileReview').click());
+  $('#fileReview').addEventListener('change', (e) => {
+    const f = e.target.files[0];
+    if (!f) return;
+    const r = new FileReader();
+    r.onload = () => {
+      try {
+        const data = JSON.parse(r.result);
+        review = { ...review, ...parseReview(data) };
+        message('判定を読み込みました。旧形式や変更前の判定は「再確認」と表示します。');
+        save(); render();
+      } catch(err){ alert('読みこめませんでした：' + err.message); }
+    };
+    r.readAsText(f, 'utf-8');
+  });
+
+  // ---- 起動 ------------------------------------------------------------
+  GRADES.forEach((g) => $('#fGrade').insertAdjacentHTML('beforeend', `<option value="${g}">${g}年</option>`));
+  DOMAINS.forEach(([d, n]) => $('#fDomain').insertAdjacentHTML('beforeend', `<option value="${d}">${d}：${n}</option>`));
+  ['fGrade','fDomain','fState','fKind','fUnit','fAttention','fSort','ruby','one'].forEach((id) => $('#'+id).addEventListener('change', () => { cursor = 0; render(); }));
+  $('#fText').addEventListener('input', () => { cursor = 0; render(); });
+  $('#prev').onclick = () => { cursor--; render(); };
+  $('#next').onclick = () => { cursor++; render(); };
+  $('#nextPending').onclick = () => {
+    const vis = visible();
+    for (let offset = 1; offset <= vis.length; offset++){
+      const i = (cursor + offset) % vis.length;
+      if (['none','stale'].includes(stateOf(vis[i]))){ cursor = i; $('#one').checked = true; render(); return; }
+    }
+    message('この絞り込み範囲に未確認の問題はありません。');
+  };
+  $('#preset').onclick = () => {
+    $('#fGrade').value = '5'; $('#fState').value = 'none';
+    for (const id of ['fDomain','fKind','fUnit','fAttention','fText']) $('#'+id).value = '';
+    $('#fSort').value = 'priority'; $('#one').checked = true; cursor = 0; render();
+  };
+  document.addEventListener('keydown', e => {
+    if (!$('#one').checked || e.ctrlKey || e.metaKey || e.altKey || e.repeat || e.isComposing || /INPUT|TEXTAREA|SELECT|BUTTON/.test(e.target.tagName) || e.target.isContentEditable) return;
+    const k = e.key.toLowerCase();
+    const target = k === 'j' ? $('#next') : k === 'k' ? $('#prev') : ['o','n'].includes(k) ? $('#list').querySelector(`[data-act="${k === 'o' ? 'ok' : 'ng'}"]`) : null;
+    if (target && !target.disabled){ e.preventDefault(); target.click(); }
+  });
+
+  boot();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,11 @@
+.mathWidget{display:flex!important;flex-direction:column;gap:10px;touch-action:manipulation}
+.fractionStrip{display:flex;width:100%;border:2px solid #35495e;border-radius:8px;overflow:hidden;min-height:48px;background:#fff}
+.fractionStrip>span,.fractionStrip>button{flex:1;min-width:0;border:0;border-right:2px solid #35495e;background:#f4f6f8;color:#203344;font:inherit;min-height:48px;padding:6px 0;border-radius:0}
+.fractionStrip>:last-child{border-right:0}
+.fractionStrip>.filled{background:#4ab6ac;color:#102e2a}
+.fractionCell:focus-visible{outline:3px solid #dd851b;outline-offset:-4px}
+.angleDiagram{display:flex;gap:8px;background:#fff;border-radius:12px}
+.angleDiagram svg{width:50%;max-height:165px;color:#203344;font:15px sans-serif}
+.angleControls{display:flex;flex-wrap:wrap;gap:6px}
+.angleControls button{flex:1;min-width:100px;min-height:48px;padding:8px!important;border-width:3px!important;font-size:16px!important}
+.angleControls button:disabled{opacity:.6}

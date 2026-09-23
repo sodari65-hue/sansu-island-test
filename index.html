@@ -1,923 +1,713 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
+<link rel="stylesheet" href="src/playtest.css">
+<link rel="stylesheet" href="src/boss-widgets.css">
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="color-scheme" content="light">
-<title>さんすうアイランド 動作チェック</title>
+<title>さんすうアイランド</title>
 <style>
 :root{
-  --bg:#e7f4ff; --bg2:#d5ecfd; --card:#ffffff; --ink:#16324a;
-  --sub:#5c748c; --line:#cfe4f4; --accent:#1b8ed6; --accent-d:#10699f;
-  --ok:#1a9455; --warn:#b9820a; --ng:#d24359; --idle:#8fa7bb;
-  --r:20px; --shadow:0 2px 0 #c6dcee, 0 8px 22px rgba(20,60,95,.08);
+  --ink:#16324a; --sub:#5c748c; --line:#cfe4f4; --card:#ffffff;
+  --accent:#1b8ed6; --accent-d:#10699f; --ok:#1a9455; --ng:#d24359;
+  --r:18px;
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html{-webkit-text-size-adjust:100%}
+html,body{height:100%;margin:0;overflow:hidden;overscroll-behavior:none}
 body{
-  margin:0; padding:0 0 80px;
-  background:linear-gradient(180deg,var(--bg) 0%,var(--bg2) 100%);
-  background-attachment:fixed;
-  color:var(--ink);
+  background:#9fe0ff; color:var(--ink);
   font-family:system-ui,-apple-system,"Hiragino Maru Gothic ProN","Hiragino Sans","Yu Gothic UI","Yu Gothic",sans-serif;
-  font-size:17px; line-height:1.75;
+  font-size:17px; line-height:1.7;
+  -webkit-text-size-adjust:100%; -webkit-user-select:none; user-select:none;
+  touch-action:none;
 }
-.wrap{max-width:1000px;margin:0 auto;padding:0 16px}
-
-header{
-  position:sticky; top:0; z-index:30;
-  background:rgba(231,244,255,.94);
-  -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px);
-  border-bottom:1px solid var(--line);
-}
-.hbar{display:flex;align-items:center;gap:12px;padding:10px 0;flex-wrap:wrap}
-.logo{font-size:30px;line-height:1}
-h1{font-size:20px;margin:0;font-weight:800}
-h1 small{display:block;font-size:12px;font-weight:600;color:var(--sub)}
-.score{margin-left:auto;display:flex;gap:6px;align-items:baseline;font-size:13px;font-weight:700;color:var(--sub)}
-.score b{font-size:22px;color:var(--ink);font-variant-numeric:tabular-nums}
-
-.intro{
-  background:var(--card);border:1px solid var(--line);border-radius:var(--r);
-  padding:16px 18px;margin:16px 0;box-shadow:var(--shadow);font-size:15px;
-}
-.intro p{margin:.35em 0}
-.intro ol{margin:.5em 0 0;padding-left:1.4em}
-.tag{display:inline-block;background:#eaf5ff;border:1px solid var(--line);border-radius:999px;
-  padding:1px 10px;font-size:12px;font-weight:700;color:var(--accent-d);margin-right:6px}
-
-.card{
-  background:var(--card);border:1px solid var(--line);border-radius:var(--r);
-  margin:14px 0;box-shadow:var(--shadow);overflow:hidden;
-}
-.card>.head{display:flex;align-items:flex-start;gap:12px;padding:16px 18px 10px}
-.num{
-  flex:none;width:34px;height:34px;border-radius:12px;background:var(--accent);
-  color:#fff;font-weight:800;display:grid;place-items:center;font-size:16px;
-}
-.card h2{font-size:18px;margin:2px 0 0;font-weight:800;flex:1 1 auto;min-width:0}
-.card .desc{padding:0 18px;color:var(--sub);font-size:14.5px;margin:0 0 10px}
-.card .body{padding:0 18px 18px}
-
-.badge{
-  flex:none;border-radius:999px;padding:4px 14px;font-weight:800;font-size:14px;
-  background:#eef3f8;color:var(--idle);border:2px solid #dbe6ef;white-space:nowrap;
-}
-.badge[data-state="ok"]{background:#e6f7ee;color:var(--ok);border-color:#a8e2c4}
-.badge[data-state="warn"]{background:#fdf5e0;color:var(--warn);border-color:#f0d89a}
-.badge[data-state="ng"]{background:#fdebee;color:var(--ng);border-color:#f3b8c2}
-.badge[data-state="info"]{background:#eaf3fb;color:var(--accent-d);border-color:#bfdcf1}
+#cv{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none}
+.hide{display:none !important}
+ruby rt{font-size:.5em;font-weight:700;color:#0d5c8c}
 
 button{
-  font:inherit;font-weight:800;border-radius:14px;border:none;cursor:pointer;
-  min-height:54px;padding:0 20px;background:var(--accent);color:#fff;
-  box-shadow:0 3px 0 var(--accent-d); transition:transform .06s, box-shadow .06s;
-  touch-action:manipulation;
+  font:inherit;font-weight:800;border:none;border-radius:14px;cursor:pointer;color:#fff;
+  background:var(--accent);box-shadow:0 3px 0 var(--accent-d);min-height:52px;padding:0 18px;
+  transition:transform .06s,box-shadow .06s;touch-action:manipulation;
 }
 button:active{transform:translateY(3px);box-shadow:0 0 0 var(--accent-d)}
+button[disabled]{opacity:.42;pointer-events:none}
 button.sub{background:#fff;color:var(--accent-d);border:2px solid var(--line);box-shadow:0 3px 0 #dbe8f3}
 button.sub:active{box-shadow:0 0 0 #dbe8f3}
-button.yes{background:var(--ok);box-shadow:0 3px 0 #147a44}
 button.no{background:var(--ng);box-shadow:0 3px 0 #ad3049}
-button.small{min-height:46px;padding:0 16px;font-size:15px;border-radius:12px}
-button[disabled]{opacity:.45;pointer-events:none}
-.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:10px 0}
-.ask{font-weight:700}
 
-dl.kv{display:grid;grid-template-columns:auto 1fr;gap:2px 14px;margin:8px 0 0;font-size:14.5px}
-dl.kv dt{color:var(--sub);font-weight:700;white-space:nowrap}
-dl.kv dd{margin:0;word-break:break-word;font-variant-numeric:tabular-nums}
-.note{font-size:13.5px;color:var(--sub);background:#f4f9fd;border-left:4px solid var(--line);
-  border-radius:0 10px 10px 0;padding:8px 12px;margin:10px 0 0}
-.note.warnbox{background:#fff8e8;border-left-color:#f0d89a;color:#7a5a06}
-.out{font-size:14.5px;margin-top:10px;min-height:1.6em;font-weight:700}
-.out.ok{color:var(--ok)} .out.ng{color:var(--ng)} .out.warn{color:var(--warn)}
-
-.stage{position:relative;border-radius:16px;overflow:hidden;background:#9fe0ff;border:1px solid var(--line)}
-#cv3d{display:block;width:100%;height:min(46vh,340px);touch-action:none}
-.fps{
-  position:absolute;left:10px;top:10px;background:rgba(10,40,60,.62);color:#fff;
-  padding:4px 12px;border-radius:999px;font-size:14px;font-weight:800;
-  font-variant-numeric:tabular-nums;pointer-events:none;
+/* ============ ログイン ============ */
+#login{
+  position:fixed;inset:0;z-index:40;overflow-y:auto;-webkit-overflow-scrolling:touch;
+  background:linear-gradient(180deg,rgba(159,224,255,.55),rgba(120,200,245,.72));
+  padding:max(14px,env(safe-area-inset-top)) 16px 28px;touch-action:pan-y;
 }
-.stagemsg{position:absolute;inset:0;display:grid;place-items:center;text-align:center;
-  padding:20px;background:#dfefff;color:var(--sub);font-weight:700;font-size:15px}
+.panel{
+  max-width:860px;margin:0 auto;background:rgba(255,255,255,.95);border-radius:26px;
+  box-shadow:0 12px 34px rgba(16,60,95,.25);padding:20px 22px 24px;
+}
+.title{display:flex;align-items:center;gap:12px;margin-bottom:6px}
+.title .ico{font-size:40px;line-height:1}
+.title h1{font-size:30px;margin:0;font-weight:900;letter-spacing:.02em}
+.title p{margin:0;font-size:13px;color:var(--sub);font-weight:700}
+h2.sec{font-size:17px;margin:18px 0 8px;font-weight:800;color:var(--accent-d)}
+#resumeList{display:flex;flex-direction:column;gap:10px}
+.resumeRow{display:flex;gap:8px;align-items:stretch}
+.resumeRow .big{flex:1;text-align:left;padding:10px 18px;min-height:64px;display:flex;flex-direction:column;justify-content:center}
+.resumeRow .who{font-size:20px;font-weight:900}
+.resumeRow .when{font-size:12px;font-weight:600;opacity:.85}
+.resumeRow .del{min-height:64px;padding:0 14px;font-size:14px}
+h2.sec .why{font-size:12px;font-weight:600;color:var(--sub);margin-left:10px}
+.pickRow{display:flex;flex-wrap:wrap;gap:8px}
+button.pick{
+  background:#fff;color:var(--ink);border:2px solid var(--line);box-shadow:0 3px 0 #e2ecf5;
+  min-height:56px;padding:0 14px;font-size:18px;font-weight:800;
+}
+.pickRow.words button.pick{min-width:96px}
+button.pick[aria-pressed="true"]{background:var(--accent);color:#fff;border-color:var(--accent-d);box-shadow:0 3px 0 var(--accent-d)}
+.nameBox{
+  display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:20px;
+  background:#eaf6ff;border:3px dashed #a9d6f2;border-radius:18px;padding:12px 20px;
+}
+.nameBox .lab{font-size:13px;font-weight:800;color:var(--accent-d)}
+#namePreview{font-size:30px;font-weight:900;color:#9fb4c6;letter-spacing:.02em}
+#namePreview.ready{color:var(--ink)}
+@keyframes pop{0%{transform:scale(.85)}60%{transform:scale(1.08)}100%{transform:scale(1)}}
+#namePreview.pop{animation:pop .32s ease-out}
+.startRow{display:flex;align-items:center;gap:14px;margin-top:18px;flex-wrap:wrap}
+#startBtn{min-height:62px;font-size:20px;padding:0 34px}
+#randomBtn{min-height:62px;font-size:17px}
+#pickInfo{font-size:14px;font-weight:700;color:var(--sub)}
+.privacy{font-size:12.5px;color:var(--sub);background:#f4f9fd;border-left:4px solid var(--line);
+  border-radius:0 10px 10px 0;padding:8px 12px;margin-top:16px}
+
+/* ============ HUD ============ */
+#hud{position:fixed;inset:0;z-index:10;pointer-events:none}
+.hudL{position:absolute;left:max(12px,env(safe-area-inset-left));top:max(12px,env(safe-area-inset-top));
+  display:flex;flex-direction:column;gap:6px;align-items:flex-start}
+.chip{
+  background:rgba(255,255,255,.88);border-radius:999px;padding:5px 16px;font-weight:800;font-size:15px;
+  box-shadow:0 2px 8px rgba(16,60,95,.16);
+  max-width:46vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.chip.place{font-size:17px}
+.hudR{position:absolute;right:max(12px,env(safe-area-inset-right));top:max(12px,env(safe-area-inset-top));
+  display:flex;gap:8px;align-items:center;pointer-events:auto}
+#menuBtn,#camBtn{min-height:48px;padding:0 18px;border-radius:999px}
+#camBtn{font-size:15px}
+#fpsTag{background:rgba(10,40,60,.55);color:#fff;border-radius:999px;padding:3px 12px;
+  font-size:13px;font-weight:800;font-variant-numeric:tabular-nums}
+
+/* ============ そうさ ============ */
+#controls{position:fixed;inset:0;z-index:12;pointer-events:none}
+#stick{
+  position:absolute;left:max(22px,env(safe-area-inset-left));bottom:max(22px,env(safe-area-inset-bottom));
+  width:170px;height:170px;border-radius:50%;pointer-events:auto;touch-action:none;
+  background:radial-gradient(circle at 50% 40%,rgba(255,255,255,.92),rgba(222,238,250,.8));
+  border:4px solid rgba(255,255,255,.9);box-shadow:0 4px 16px rgba(16,60,95,.22);
+}
+#stick.on{border-color:#bfe3fb}
+#knob{
+  position:absolute;left:50%;top:50%;width:76px;height:76px;margin:-38px 0 0 -38px;border-radius:50%;
+  background:var(--accent);box-shadow:0 3px 0 var(--accent-d);pointer-events:none;
+}
+.acts{
+  position:absolute;right:max(20px,env(safe-area-inset-right));bottom:max(20px,env(safe-area-inset-bottom));
+  display:grid;grid-template-columns:repeat(2,auto);gap:12px;align-items:end;pointer-events:auto;
+}
+.acts button{
+  width:96px;height:96px;min-height:96px;border-radius:50%;padding:0;font-size:16px;line-height:1.15;
+}
+.acts button[data-action="talk"]{background:#2aa36a;box-shadow:0 3px 0 #1d7b4f;grid-row:1;grid-column:2}
+.acts button[data-action="attack"]{background:#e2603f;box-shadow:0 3px 0 #b3452a;grid-row:2;grid-column:1}
+.acts button[data-action="jump"]{background:#f0a52c;box-shadow:0 3px 0 #bb7c13;grid-row:2;grid-column:2}
+#talkHint{
+  position:absolute;right:max(20px,env(safe-area-inset-right));bottom:calc(max(20px,env(safe-area-inset-bottom)) + 216px);
+  background:rgba(255,255,255,.94);border-radius:999px;padding:6px 18px;font-weight:800;font-size:15px;
+  box-shadow:0 2px 10px rgba(16,60,95,.2);opacity:0;transform:translateY(8px);transition:.16s;
+}
+#talkHint.show{opacity:1;transform:none}
+
+/* ============ メッセージ窓 ============ */
+#msg{
+  position:fixed;z-index:20;left:50%;transform:translateX(-50%);
+  bottom:calc(max(20px,env(safe-area-inset-bottom)) + 26px);
+  width:min(640px,calc(100vw - 420px));min-width:300px;
+  background:rgba(255,255,255,.97);border-radius:22px;padding:14px 18px 16px;
+  box-shadow:0 10px 30px rgba(16,60,95,.3);border:3px solid #fff;
+}
+#msgName{font-size:14px;font-weight:900;color:var(--accent-d);margin-bottom:2px}
+#msgText{font-size:21px;font-weight:700;line-height:2.5;min-height:2.5em;white-space:pre-line}
+.msgBtns{display:flex;gap:10px;justify-content:flex-end;margin-top:8px}
+#msgSpeak{min-height:48px;padding:0 16px}
+#msgNext{min-height:48px;padding:0 26px}
+
+/* ============ 告知 ============ */
+#banner{
+  position:fixed;z-index:18;left:50%;top:76px;transform:translate(-50%,-14px);
+  background:rgba(255,255,255,.94);border-radius:999px;padding:8px 30px;
+  font-size:24px;font-weight:900;box-shadow:0 6px 20px rgba(16,60,95,.25);
+  opacity:0;transition:.3s;pointer-events:none;white-space:nowrap;
+}
+#banner.show{opacity:1;transform:translate(-50%,0)}
+#toast{
+  position:fixed;z-index:19;left:50%;top:50%;transform:translate(-50%,-50%) scale(.96);
+  background:rgba(22,50,74,.9);color:#fff;border-radius:18px;padding:12px 24px;
+  font-size:18px;font-weight:800;box-shadow:0 8px 24px rgba(0,0,0,.28);
+  opacity:0;transition:.18s;pointer-events:none;max-width:78vw;text-align:center;
+}
+#toast.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
+#toast ruby rt{color:#bfe3fb}
+
+/* ============ メニュー ============ */
+#menu{
+  position:fixed;inset:0;z-index:30;background:rgba(16,50,80,.42);
+  display:grid;place-items:center;padding:16px;overflow-y:auto;touch-action:pan-y;
+}
+.menuCard{
+  width:min(560px,100%);background:#fff;border-radius:24px;padding:18px 20px 20px;
+  box-shadow:0 14px 40px rgba(16,60,95,.35);
+}
+.menuHead{display:flex;align-items:center;gap:12px;margin-bottom:6px}
+.menuHead h2{font-size:22px;margin:0;font-weight:900;flex:1}
+.meName{
+  display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;
+  background:#eaf6ff;border-radius:16px;padding:10px 18px;margin-bottom:14px;
+}
+.meName b{font-size:26px;font-weight:900}
+.meName .lab{font-size:12px;font-weight:800;color:var(--accent-d)}
+.mitori{margin-top:18px;border-top:2px solid var(--line);padding-top:12px}
+.mitori h3{font-size:16px;margin:0;font-weight:900;color:var(--accent-d)}
+.mnote{font-size:13px;color:var(--sub);margin:2px 0 0;font-weight:700}
+.draftNote{background:#fff8e8;border-left:4px solid #f0d89a;border-radius:0 10px 10px 0;padding:7px 12px;margin:4px 0 0;line-height:1.9}
+.draftNote b{color:#8a6410}
+.mrow{display:flex;align-items:center;gap:12px;margin:10px 0}
+.mlab{font-weight:800;min-width:5.5em}
 .seg{display:inline-flex;border:2px solid var(--line);border-radius:12px;overflow:hidden;background:#fff}
 .seg button{min-height:46px;border-radius:0;background:#fff;color:var(--sub);box-shadow:none;
   padding:0 16px;font-size:15px;border-right:2px solid var(--line)}
 .seg button:last-child{border-right:none}
 .seg button[aria-pressed="true"]{background:var(--accent);color:#fff}
 .seg button:active{transform:none}
-label.chk{display:inline-flex;align-items:center;gap:8px;font-weight:700;font-size:15px}
-label.chk input{width:26px;height:26px;accent-color:var(--accent)}
+dl.mkv{display:grid;grid-template-columns:auto 1fr;gap:8px 14px;margin:16px 0 0;font-size:15px;line-height:2.1}
+dl.mkv dt{color:var(--sub);font-weight:700;white-space:nowrap}
+dl.mkv dd{margin:0;font-variant-numeric:tabular-nums;font-weight:700}
+.mbtns{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+.mbtns button{min-height:50px}
 
-.pad{display:flex;gap:18px;align-items:center;flex-wrap:wrap;margin-top:12px}
-.stick{
-  position:relative;width:150px;height:150px;border-radius:50%;flex:none;
-  background:radial-gradient(circle at 50% 40%,#ffffff,#e3eef7);
-  border:3px solid var(--line);touch-action:none;box-shadow:inset 0 2px 6px rgba(0,0,0,.06);
-}
-.knob{position:absolute;left:50%;top:50%;width:64px;height:64px;margin:-32px 0 0 -32px;
-  border-radius:50%;background:var(--accent);box-shadow:0 3px 0 var(--accent-d);pointer-events:none}
-.acts{display:flex;gap:12px;flex-wrap:wrap}
-.acts button{border-radius:50%;width:88px;height:88px;min-height:88px;padding:0;font-size:16px;line-height:1.2}
-.acts button[data-done="1"]{background:var(--ok);box-shadow:0 3px 0 #147a44}
+/* ============ その他 ============ */
 
-ruby rt{font-size:.5em;font-weight:700;color:var(--accent-d)}
-.sample{font-size:22px;font-weight:700;background:#f4f9fd;border:1px solid var(--line);
-  border-radius:14px;padding:14px 16px;margin:6px 0 0;line-height:2.7}
-.sample.plain rt{visibility:hidden}
-input[type="number"],select{
-  font:inherit;font-weight:700;min-height:54px;border-radius:14px;border:2px solid var(--line);
-  padding:0 14px;background:#fff;color:var(--ink);max-width:180px;
+/* ============ たたかい・クエスト ============ */
+.encWrap{
+  position:fixed;inset:0;z-index:35;background:rgba(14,38,58,.55);
+  display:grid;place-items:center;padding:12px;overflow-y:auto;touch-action:pan-y;
 }
-#summary{width:100%;min-height:240px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
-  font-size:13px;line-height:1.6;border:2px solid var(--line);border-radius:14px;padding:12px;
-  background:#fff;color:var(--ink);white-space:pre;overflow:auto}
-footer{text-align:center;color:var(--sub);font-size:13px;padding:24px 16px}
-.hide{display:none !important}
+.encCard{
+  width:min(720px,100%);background:#fff;border-radius:24px;padding:14px 18px 16px;
+  box-shadow:0 16px 44px rgba(10,40,70,.4);
+}
+.encTop{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.encTop .foe{font-size:20px;font-weight:900}
+.hearts{font-size:19px;color:#e2475f;letter-spacing:2px}
+.hearts .off{color:#dfe7ee}
+.draftTag{
+  background:#fff3d6;border:2px solid #f0cf86;color:#8a6410;border-radius:999px;
+  padding:1px 10px;font-size:12px;font-weight:800;
+}
+#encFig{display:flex;flex-direction:column;gap:6px;margin:8px 0 0}
+.pinned .pinCap{font-size:12.5px;font-weight:800;color:var(--sub)}
+#encQ,#qstBody,#dgnQ{font-size:21px;font-weight:700;line-height:2.4;margin:8px 0 4px}
+.mission{margin-top:8px;font-size:17px;font-weight:800;color:var(--accent-d)}
+.encMsg{font-size:15.5px;font-weight:800;min-height:1.6em;line-height:2;margin-top:4px}
+.encMsg.ok{color:var(--ok)} .encMsg.ng{color:var(--ng)} .encMsg.warn{color:var(--warn)}
+.encBottom{display:flex;align-items:center;gap:10px;margin-top:10px;flex-wrap:wrap}
+.encBottom .me{font-size:13px;font-weight:800;color:var(--sub)}
+.encBottom button{min-height:46px;padding:0 16px;font-size:15px;margin-left:auto}
+.encBottom button+button{margin-left:0}
+
+.encAns{display:flex;flex-direction:column;gap:9px;margin-top:6px}
+.encAns.choices{}
+button.ansBtn{
+  background:#fff;color:var(--ink);border:2px solid var(--line);box-shadow:0 3px 0 #e2ecf5;
+  min-height:58px;font-size:18px;text-align:left;padding:8px 18px;line-height:1.9;
+}
+button.ansBtn.on{background:#d9efff;border-color:var(--accent);box-shadow:0 3px 0 #a9d6f2}
+button.ansBtn.ok{background:var(--accent);color:#fff;border:none;box-shadow:0 3px 0 var(--accent-d);text-align:center}
+button.ansBtn .num{
+  display:inline-grid;place-items:center;width:26px;height:26px;border-radius:50%;
+  background:var(--accent);color:#fff;font-size:14px;margin-right:10px;vertical-align:middle;
+}
+button.ansBtn .num:empty{background:#e4edf5}
+
+.encAns.pad{align-items:center}
+.padView{
+  font-size:34px;font-weight:900;min-width:180px;text-align:center;
+  background:#f3f9fd;border:2px solid var(--line);border-radius:14px;padding:4px 18px;
+  font-variant-numeric:tabular-nums;
+}
+.padView .padUnit{font-size:18px;margin-left:6px;color:var(--sub)}
+.padKeys{display:grid;grid-template-columns:repeat(3,76px);gap:8px;margin-top:8px}
+.padKeys button.ok{grid-column:1 / -1}
+.padKeys button{min-height:56px;padding:0;font-size:22px;background:#fff;color:var(--ink);
+  border:2px solid var(--line);box-shadow:0 3px 0 #e2ecf5}
+.padKeys button.ok{background:var(--ok);color:#fff;border:none;box-shadow:0 3px 0 #147a44;font-size:16px}
+.padKeys button.k2{font-size:15px}
+
+.barLabel{font-size:16px;font-weight:800;align-self:flex-start}
+.barTrack{
+  position:relative;width:100%;height:46px;background:#eef5fa;border:3px solid var(--line);
+  border-radius:12px;overflow:hidden;touch-action:none;cursor:pointer;
+}
+.barTrack.small{height:26px;border-width:2px;cursor:default}
+.barFill{position:absolute;inset:0 auto 0 0;width:0;background:linear-gradient(180deg,#5fc0f5,#1b8ed6)}
+.barTicks{position:absolute;inset:0;display:flex;pointer-events:none}
+.barTicks i{flex:1;border-right:1px solid rgba(255,255,255,.75)}
+.barTicks i:last-child{border-right:none}
+.barRead{font-size:17px;font-weight:800;font-variant-numeric:tabular-nums}
+.barRead b{font-size:24px;color:var(--accent-d)}
+
+.qTable{border-collapse:collapse;font-size:15px;margin:6px 0}
+.qTable th,.qTable td{border:1px solid var(--line);padding:5px 14px;text-align:center}
+.qTable th{background:#eef6fc;font-weight:800}
+#qstTitle{font-size:20px;font-weight:900}
+#qstGiver{font-size:13px;font-weight:800;color:var(--accent-d)}
+#qstStep{font-size:13px;font-weight:800;color:var(--sub);margin-left:auto}
+
+
+/* ============ たたかい中は右に問題、左に主人公と相手 ============ */
+.encWrap.side{background:linear-gradient(90deg,rgba(14,38,58,0) 0%,rgba(14,38,58,0) 38%,rgba(14,38,58,.45) 60%);
+  place-items:center end;padding-right:max(16px,env(safe-area-inset-right))}
+.encWrap.side .encCard{width:min(560px,56vw);max-height:calc(100vh - 24px);overflow-y:auto}
+@media (max-width:760px){ .encWrap.side .encCard{width:100%} .encWrap.side{background:rgba(14,38,58,.5)} }
+.subQ{font-size:16px;font-weight:700;color:var(--sub);line-height:2.1;margin-top:2px}
+
+/* 2段階選択 */
+.tsHead{font-size:13.5px;font-weight:900;color:var(--accent-d);margin:4px 0 -2px}
+.tsNum{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:50%;background:var(--accent);
+  color:#fff;font-size:13px;margin-right:8px}
+.tsChosen{background:#e6f7ee;border:2px solid #a8e2c4;border-radius:12px;padding:6px 14px;font-weight:800;font-size:16px;line-height:2}
+.tsChosen b{color:var(--ok)}
+
+/* ならす（ボス） */
+.lvWrap{display:flex;gap:14px;justify-content:center;align-items:flex-end;padding:6px 0}
+button.lvCol{background:#f3f9fd;border:3px solid var(--line);box-shadow:none;border-radius:14px;
+  display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:4px;padding:8px 10px;color:var(--ink);min-width:78px}
+button.lvCol.pick{border-color:#f0a52c;background:#fff6e0}
+.lvStack{display:flex;flex-direction:column-reverse;gap:3px;min-height:calc(var(--h) * 25px)}
+.lvStack i{display:block;width:52px;height:22px;border-radius:6px;background:linear-gradient(180deg,#6fc0f5,#2d86c9)}
+button.lvCol.pick .lvStack i:last-child{background:linear-gradient(180deg,#ffd27a,#f0a52c);transform:translateY(-6px)}
+.lvNum{font-size:15px;font-weight:900}
+.lvRow{display:flex;justify-content:center;margin-top:4px}
+.barOne{position:absolute;right:-2px;top:-22px;font-size:12px;font-weight:900;color:var(--accent-d)}
+
+/* ダンジョン */
+#dgnDoors{display:flex;align-items:center;gap:0;margin:6px 0 2px;flex-wrap:wrap}
+.door{display:inline-grid;place-items:center;width:34px;height:40px;border-radius:12px 12px 4px 4px;
+  background:#e4d6c6;color:#6b4a2f;font-weight:900;font-size:14px;border:2px solid #c9b295}
+.door.think{background:#e9defa;border-color:#c8b6ef;color:#6a4fb0}
+.door.now{background:#ffcf6b;border-color:#e09a1f;color:#5a3a00;transform:scale(1.12)}
+.door.done{background:#a8e2c4;border-color:#6cc59a;color:#155d3a}
+.doorLine{width:16px;height:3px;background:#d5c4b0}
+.roomTag{display:inline-block;background:#e4d6c6;color:#6b4a2f;border-radius:999px;padding:0 10px;font-size:12px;font-weight:900;margin-right:8px;vertical-align:middle}
+.roomTag.think{background:#e9defa;color:#6a4fb0}
+
+/* メニュー（ハブ） */
+.hubGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:4px 0 12px}
+button.hub{background:#fff;color:var(--ink);border:2px solid var(--line);box-shadow:0 3px 0 #dbe8f3;
+  min-height:92px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:15px;line-height:1.9;padding:4px}
+.hubIco{font-size:28px;line-height:1.1}
+button.hub small{font-size:10.5px;color:var(--sub);font-weight:700;line-height:1.2}
+@media (max-width:600px){ .hubGrid{grid-template-columns:repeat(2,1fr)} }
+.teacher{margin-top:12px;border-top:2px dashed var(--line);padding-top:8px}
+button.tLock{background:none;box-shadow:none;color:#9fb0c0;font-size:12px;min-height:34px;padding:0 10px;border:1px dashed #cfdce6}
+button.tLock.holding{background:#fff6e0;color:#8a6410;transition:background 1.2s}
+
+/* 称号・持ち物・きろく */
+#scr .menuCard{width:min(820px,100%);max-height:calc(100vh - 24px);overflow-y:auto}
+.scrTabs{display:flex;gap:8px;flex:1}
+.scrTabs button{min-height:44px;background:#fff;color:var(--sub);border:2px solid var(--line);box-shadow:none;font-size:15px}
+.scrTabs button.on{background:var(--accent);color:#fff;border-color:var(--accent-d)}
+.scrNote{font-size:13px;color:var(--sub);font-weight:700;line-height:2;margin:8px 0}
+.scrNote b{color:var(--ink);margin-left:8px}
+.gTabs{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0 10px}
+button.gTab{min-height:40px;padding:0 14px;background:#fff;color:var(--ink);border:3px solid var(--c);box-shadow:none;font-size:14px;line-height:1.9}
+button.gTab.on{background:var(--c);color:#fff}
+.tList{display:flex;flex-direction:column;gap:8px}
+.tRow{display:grid;grid-template-columns:48px 1fr auto auto;gap:12px;align-items:center;background:#f6fafd;border:2px solid var(--line);border-radius:14px;padding:6px 12px}
+.tRow.unmet{opacity:.6}
+.tIcon{display:grid;place-items:center;width:44px;height:44px;border-radius:50%;background:var(--c);color:#fff;font-weight:900;font-size:18px}
+.tRow.unmet .tIcon{background:#555}
+.tMain{display:flex;flex-direction:column;line-height:1.8}
+.tName{font-weight:900;font-size:16px}
+.tSub{font-size:12.5px;color:var(--sub);font-weight:700}
+.tStars{color:#f2b705;font-size:17px;letter-spacing:1px}
+.tStars .off{color:#dfe7ee}
+.tNext{font-size:12px;color:var(--sub);font-weight:800;min-width:9em;text-align:right;line-height:1.8}
+.iCols{display:grid;grid-template-columns:3fr 2fr;gap:14px}
+@media (max-width:700px){ .iCols{grid-template-columns:1fr} }
+.iCols h3,#scrBody h3{font-size:14px;margin:10px 0 6px;color:var(--accent-d);font-weight:900}
+.iGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:8px}
+.iCell{display:flex;flex-direction:column;align-items:center;gap:2px;text-align:center;background:#f6fafd;border:2px solid var(--line);border-radius:12px;padding:6px 4px;font-size:11.5px;font-weight:800;line-height:1.6}
+.iCell img{width:44px;height:44px;border-radius:10px;border:2px solid rgba(0,0,0,.08)}
+.iCell.lock{opacity:.7}
+.iCell small{font-size:9.5px;color:var(--sub);font-weight:700;line-height:1.3}
+.acRow{display:grid;grid-template-columns:6em 1fr auto;gap:10px;align-items:center;font-weight:800;font-size:14px;margin:4px 0}
+.acBar{height:14px;background:#e4edf5;border-radius:999px;overflow:hidden}
+.acBar i{display:block;height:100%;background:linear-gradient(90deg,#5fc0f5,#1b8ed6)}
+
+/* 着せかえ */
+#cs .menuCard{width:min(900px,100%);max-height:calc(100vh - 24px);display:grid;grid-template-columns:1fr 1fr;gap:14px;overflow:hidden}
+@media (max-width:700px){ #cs .menuCard{grid-template-columns:1fr;overflow-y:auto} }
+#csCanvas{width:100%;height:min(62vh,440px);display:block;background:radial-gradient(circle at 50% 40%,#e9f7ff,#bfe6ff);border-radius:18px;touch-action:none}
+.csSide{display:flex;flex-direction:column;min-height:0}
+.csTabs{display:flex;gap:8px;margin-bottom:8px}
+.csTabs button{flex:1;min-height:48px;background:#fff;color:var(--sub);border:2px solid var(--line);box-shadow:none}
+.csTabs button.on{background:var(--accent);color:#fff;border-color:var(--accent-d)}
+#csOpts{overflow-y:auto;flex:1;min-height:0;padding:2px}
+.csGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.csGrid.items{grid-template-columns:repeat(auto-fill,minmax(86px,1fr))}
+button.csOpt{background:#fff;color:var(--ink);border:3px solid var(--line);box-shadow:none;min-height:96px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:6px 4px;font-size:13px;line-height:1.8}
+button.csOpt.on{border-color:var(--accent);background:#eaf6ff}
+button.csOpt.lock{background:#eef2f5;color:#7a8a99}
+.csSw{width:42px;height:42px;border-radius:50%;border:3px solid rgba(0,0,0,.12)}
+.csFace{width:56px;height:56px;border-radius:50%;background-color:#8b5a3c;background-image:url(character/textures/faces.png);background-size:400% 100%}
+.csItem{width:42px;height:42px;border-radius:10px}
+button.csOpt.lock .csItem{filter:brightness(0) opacity(.45)}
+.csLab{font-weight:800}
+.csFoot{display:flex;gap:10px;align-items:center;margin-top:10px;flex-wrap:wrap}
+#csOk{min-height:60px;font-size:19px;padding:0 30px}
+#csMsg{font-size:14px;font-weight:800;color:var(--warn)}
+
+/* 称号をもらったとき */
+#pop{position:fixed;z-index:45;left:50%;top:18%;transform:translate(-50%,-20px) scale(.9);opacity:0;pointer-events:none;transition:.28s}
+#pop.show{opacity:1;transform:translate(-50%,0) scale(1)}
+.popIn{background:linear-gradient(180deg,#fffbe6,#fff);border:4px solid #f2c94c;border-radius:22px;padding:12px 28px 14px;
+  box-shadow:0 12px 30px rgba(80,60,0,.3);display:flex;flex-direction:column;align-items:center;gap:2px;min-width:280px;text-align:center}
+.popStar{font-size:34px;color:#f2b705;line-height:1}
+.popIn b{font-size:22px;font-weight:900;line-height:2}
+.popIn span:last-child{font-size:14px;font-weight:800;color:var(--sub);line-height:1.9}
+
+#rotate{
+  position:fixed;inset:0;z-index:60;background:#0f3350;color:#fff;display:none;
+  place-items:center;text-align:center;padding:30px;font-size:22px;font-weight:800;line-height:2;
+}
+@media (orientation:portrait){ 
+/* ============ たたかい・クエスト ============ */
+.encWrap{
+  position:fixed;inset:0;z-index:35;background:rgba(14,38,58,.55);
+  display:grid;place-items:center;padding:12px;overflow-y:auto;touch-action:pan-y;
+}
+.encCard{
+  width:min(720px,100%);background:#fff;border-radius:24px;padding:14px 18px 16px;
+  box-shadow:0 16px 44px rgba(10,40,70,.4);
+}
+.encTop{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.encTop .foe{font-size:20px;font-weight:900}
+.hearts{font-size:19px;color:#e2475f;letter-spacing:2px}
+.hearts .off{color:#dfe7ee}
+.draftTag{
+  background:#fff3d6;border:2px solid #f0cf86;color:#8a6410;border-radius:999px;
+  padding:1px 10px;font-size:12px;font-weight:800;
+}
+#encFig{display:flex;flex-direction:column;gap:6px;margin:8px 0 0}
+.pinned .pinCap{font-size:12.5px;font-weight:800;color:var(--sub)}
+#encQ,#qstBody{font-size:21px;font-weight:700;line-height:2.4;margin:8px 0 4px}
+.mission{margin-top:8px;font-size:17px;font-weight:800;color:var(--accent-d)}
+.encMsg{font-size:15.5px;font-weight:800;min-height:1.6em;line-height:2;margin-top:4px}
+.encMsg.ok{color:var(--ok)} .encMsg.ng{color:var(--ng)} .encMsg.warn{color:var(--warn)}
+.encBottom{display:flex;align-items:center;gap:10px;margin-top:10px;flex-wrap:wrap}
+.encBottom .me{font-size:13px;font-weight:800;color:var(--sub)}
+.encBottom button{min-height:46px;padding:0 16px;font-size:15px;margin-left:auto}
+.encBottom button+button{margin-left:0}
+
+.encAns{display:flex;flex-direction:column;gap:9px;margin-top:6px}
+.encAns.choices{}
+button.ansBtn{
+  background:#fff;color:var(--ink);border:2px solid var(--line);box-shadow:0 3px 0 #e2ecf5;
+  min-height:58px;font-size:18px;text-align:left;padding:8px 18px;line-height:1.9;
+}
+button.ansBtn.on{background:#d9efff;border-color:var(--accent);box-shadow:0 3px 0 #a9d6f2}
+button.ansBtn.ok{background:var(--accent);color:#fff;border:none;box-shadow:0 3px 0 var(--accent-d);text-align:center}
+button.ansBtn .num{
+  display:inline-grid;place-items:center;width:26px;height:26px;border-radius:50%;
+  background:var(--accent);color:#fff;font-size:14px;margin-right:10px;vertical-align:middle;
+}
+button.ansBtn .num:empty{background:#e4edf5}
+
+.encAns.pad{align-items:center}
+.padView{
+  font-size:34px;font-weight:900;min-width:180px;text-align:center;
+  background:#f3f9fd;border:2px solid var(--line);border-radius:14px;padding:4px 18px;
+  font-variant-numeric:tabular-nums;
+}
+.padView .padUnit{font-size:18px;margin-left:6px;color:var(--sub)}
+.padKeys{display:grid;grid-template-columns:repeat(3,72px);gap:8px;margin-top:8px}
+.padKeys button{min-height:56px;padding:0;font-size:22px;background:#fff;color:var(--ink);
+  border:2px solid var(--line);box-shadow:0 3px 0 #e2ecf5}
+.padKeys button.ok{background:var(--ok);color:#fff;border:none;box-shadow:0 3px 0 #147a44;font-size:16px}
+.padKeys button.k2{font-size:15px}
+
+.barLabel{font-size:16px;font-weight:800;align-self:flex-start}
+.barTrack{
+  position:relative;width:100%;height:46px;background:#eef5fa;border:3px solid var(--line);
+  border-radius:12px;overflow:hidden;touch-action:none;cursor:pointer;
+}
+.barTrack.small{height:26px;border-width:2px;cursor:default}
+.barFill{position:absolute;inset:0 auto 0 0;width:0;background:linear-gradient(180deg,#5fc0f5,#1b8ed6)}
+.barTicks{position:absolute;inset:0;display:flex;pointer-events:none}
+.barTicks i{flex:1;border-right:1px solid rgba(255,255,255,.75)}
+.barTicks i:last-child{border-right:none}
+.barRead{font-size:17px;font-weight:800;font-variant-numeric:tabular-nums}
+.barRead b{font-size:24px;color:var(--accent-d)}
+
+.qTable{border-collapse:collapse;font-size:15px;margin:6px 0}
+.qTable th,.qTable td{border:1px solid var(--line);padding:5px 14px;text-align:center}
+.qTable th{background:#eef6fc;font-weight:800}
+#qstTitle{font-size:20px;font-weight:900}
+#qstGiver{font-size:13px;font-weight:800;color:var(--accent-d)}
+#qstStep{font-size:13px;font-weight:800;color:var(--sub);margin-left:auto}
+
+#rotate{display:grid} }
+#fatal{
+  position:fixed;inset:0;z-index:70;background:#16324a;color:#fff;display:grid;place-items:center;
+  text-align:center;padding:30px;font-size:18px;font-weight:700;line-height:2;
+}
+#splash{
+  position:fixed;inset:0;z-index:50;background:#9fe0ff;display:grid;place-items:center;
+  color:#0d5c8c;font-size:20px;font-weight:900;
+}
 </style>
 </head>
 <body>
 
-<header>
-  <div class="wrap hbar">
-    <div class="logo" aria-hidden="true">🏝️</div>
-    <h1>さんすうアイランド 動作チェック<small>第0段階：学校のiPadで動くかを調べるページ</small></h1>
-    <div class="score"><span>OK</span><b id="scoreNum">0</b><span>/ 8</span></div>
+<canvas id="cv"></canvas>
+
+<div id="splash">🏝️ しまを つくっています…</div>
+<div id="fatal" class="hide"></div>
+<div id="rotate">iPad を <b>よこむき</b> に してね</div>
+
+<!-- ============ ログイン ============ -->
+<div id="login" class="hide">
+  <div class="panel">
+    <div class="title">
+      <div class="ico">🏝️</div>
+      <div>
+        <h1>さんすうアイランド</h1>
+        <p>ほんとうの なまえは つかいません。3つの ことばを えらんで、じぶんの なまえを つくろう。</p>
+      </div>
+    </div>
+
+    <div id="resumeBox" class="hide">
+      <h2 class="sec">つづきから</h2>
+      <div id="resumeList"></div>
+      <div class="startRow"><button id="newBtn" class="sub">あたらしい なまえを つくる</button></div>
+    </div>
+
+    <div id="loginPick">
+      <h2 class="sec">学年<span class="why">ふりがなと むずかしさに つかいます</span></h2>
+      <div id="gradeRow" class="pickRow"></div>
+
+      <h2 class="sec">① どんな</h2>
+      <div id="partA" class="pickRow words"></div>
+      <h2 class="sec">② なに</h2>
+      <div id="partB" class="pickRow words"></div>
+      <h2 class="sec">③ しょうごう</h2>
+      <div id="partC" class="pickRow words"></div>
+
+      <div class="nameBox">
+        <span class="lab">きみの なまえ</span>
+        <span id="namePreview">？？？</span>
+      </div>
+
+      <div class="startRow">
+        <button id="startBtn" disabled>はじめる</button>
+        <button id="randomBtn" class="sub">🎲 おまかせ</button>
+        <span id="pickInfo"></span>
+      </div>
+    </div>
+
+    <p class="privacy">このゲームは、なまえ・クラス・出席番号などの 個人情報を あつかいません。
+    記録は この iPad の中だけに 残り、外へは 送りません。
+    先生に 見せるときは、メニューの「せんせいに みせる」を ひらいてください。</p>
   </div>
-</header>
-
-<div class="wrap">
-
-  <div class="intro">
-    <p><span class="tag">つかいかた</span>学校のiPadのSafariでこのページを開き、上から順にボタンを押してください。最後に <b>9番</b> で結果をまとめてコピーできます。</p>
-    <ol>
-      <li>iPadは<b>横向き</b>にしてください。</li>
-      <li>音の確認があります。<b>音量</b>を上げ、iPadの<b>消音</b>を解除してください。</li>
-      <li>このページは名前などの個人情報を一切あつかいません。入力するのは練習用の番号だけです。</li>
-    </ol>
-  </div>
-
-  <!-- 1 -->
-  <section class="card" id="c-page">
-    <div class="head"><div class="num">1</div><h2>ページが開けたか</h2><span class="badge" data-badge="page">未</span></div>
-    <p class="desc">学校のネットワークから GitHub Pages（github.io）が見えるかを確かめます。</p>
-    <div class="body">
-      <dl class="kv" id="kvPage"></dl>
-      <div class="note">このページが表示できている時点で「開ける」ことは確認できています。判定が「△」のときは、github.io 以外の場所（ローカルのファイルなど）で開いています。</div>
-    </div>
-  </section>
-
-  <!-- 2 -->
-  <section class="card" id="c-dev">
-    <div class="head"><div class="num">2</div><h2>この端末の情報</h2><span class="badge" data-badge="dev">情報</span></div>
-    <p class="desc">機種・画面サイズ・ブラウザの種類です。判定はありません（記録用）。</p>
-    <div class="body"><dl class="kv" id="kvDev"></dl></div>
-  </section>
-
-  <!-- 3 -->
-  <section class="card" id="c-3d">
-    <div class="head"><div class="num">3</div><h2>3D表示（Three.js）</h2><span class="badge" data-badge="gl">未</span></div>
-    <p class="desc">ゲーム本体と同じ Three.js で島を描き、なめらかさ（fps）を10秒間はかります。<b>30fps以上</b>で合格です。</p>
-    <div class="body">
-      <div class="stage">
-        <canvas id="cv3d"></canvas>
-        <div class="fps" id="fpsTag">-- fps</div>
-        <div class="stagemsg" id="stageMsg">3Dを読み込んでいます…</div>
-      </div>
-      <div class="row">
-        <span class="ask">画質</span>
-        <div class="seg" id="segQ">
-          <button type="button" data-q="1" aria-pressed="false">低</button>
-          <button type="button" data-q="1.5" aria-pressed="false">中</button>
-          <button type="button" data-q="2" aria-pressed="true">高</button>
-        </div>
-        <label class="chk"><input type="checkbox" id="heavy"> たくさん表示して試す</label>
-      </div>
-      <div class="row"><button type="button" id="btnBench">10秒 なめらかさを はかる</button></div>
-      <div class="out" id="outGl"></div>
-      <dl class="kv" id="kvGl"></dl>
-      <div class="note">目安：30fps以上＝そのまま作れる／20〜30fps＝画質を下げれば使える／20fps未満＝その機種では作りを軽くする必要があります。</div>
-    </div>
-  </section>
-
-  <!-- 4 -->
-  <section class="card" id="c-touch">
-    <div class="head"><div class="num">4</div><h2>タッチ操作（スティックとボタン）</h2><span class="badge" data-badge="touch">未</span></div>
-    <p class="desc">左の丸を指で動かすと、上の3Dのキャラクターが歩きます。右の3つのボタンも全部押してください。</p>
-    <div class="body">
-      <div class="pad">
-        <div class="stick" id="stick"><div class="knob" id="knob"></div></div>
-        <div class="acts">
-          <button type="button" class="act" data-act="たたかう">たたかう</button>
-          <button type="button" class="act" data-act="はなす">はなす</button>
-          <button type="button" class="act" data-act="ジャンプ">ジャンプ</button>
-        </div>
-      </div>
-      <div class="out" id="outTouch"></div>
-      <dl class="kv" id="kvTouch"></dl>
-    </div>
-  </section>
-
-  <!-- 5 -->
-  <section class="card" id="c-speech">
-    <div class="head"><div class="num">5</div><h2>読み上げ（音声）</h2><span class="badge" data-badge="speech">未</span></div>
-    <p class="desc">低学年のために、問題文を読み上げます。ブラウザの標準機能なので無料・通信なしです。</p>
-    <div class="body">
-      <div class="note warnbox">先に iPad の<b>音量</b>を上げ、<b>消音スイッチ / コントロールセンターの消音</b>を解除してください。</div>
-      <div class="row">
-        <button type="button" id="btnBeep" class="sub">まず「ポーン」と音を鳴らす</button>
-        <button type="button" id="btnSpeak">日本語を 読み上げる</button>
-      </div>
-      <div class="row" id="askSpeech">
-        <span class="ask">声は聞こえましたか？</span>
-        <button type="button" class="yes small" data-sp="ok">聞こえた</button>
-        <button type="button" class="no small" data-sp="ng">聞こえない</button>
-      </div>
-      <div class="out" id="outSpeech"></div>
-      <dl class="kv" id="kvSpeech"></dl>
-    </div>
-  </section>
-
-  <!-- 6 -->
-  <section class="card" id="c-ruby">
-    <div class="head"><div class="num">6</div><h2>ふりがな（ルビ）</h2><span class="badge" data-badge="ruby">未</span></div>
-    <p class="desc">漢字の上に小さく読みがなが出るか、文字が重なったり崩れたりしないかを見てください。</p>
-    <div class="body">
-      <p class="sample" id="sampleRuby">
-        <ruby>2.4<rt>にてんよん</rt></ruby>×0.5の<ruby>答<rt>こた</rt></ruby>えは、2.4より<ruby>大<rt>おお</rt></ruby>きい？<ruby>小<rt>ちい</rt></ruby>さい？
-      </p>
-      <div class="row">
-        <button type="button" id="btnRuby" class="sub">ふりがなを 消す / 出す</button>
-      </div>
-      <div class="row">
-        <span class="ask">きれいに表示されていますか？</span>
-        <button type="button" class="yes small" data-rb="ok">きれい</button>
-        <button type="button" class="no small" data-rb="ng">くずれる</button>
-      </div>
-      <div class="out" id="outRuby"></div>
-    </div>
-  </section>
-
-  <!-- 7 -->
-  <section class="card" id="c-save">
-    <div class="head"><div class="num">7</div><h2>保存（続きから遊べるか）</h2><span class="badge" data-badge="save">未</span></div>
-    <p class="desc">端末の中だけに保存します（localStorage）。保存 → 再読み込み で残っていれば合格です。</p>
-    <div class="body">
-      <div class="row">
-        <label class="ask" for="inNum">練習用の番号</label>
-        <input type="number" id="inNum" min="1" max="45" step="1" value="12" inputmode="numeric">
-        <label class="ask" for="inColor">すきな色</label>
-        <select id="inColor"><option>あか</option><option selected>あお</option><option>きいろ</option><option>みどり</option></select>
-      </div>
-      <div class="row">
-        <button type="button" id="btnSave">ほぞんする</button>
-        <button type="button" id="btnReload" class="sub">ページを 再読み込み</button>
-        <button type="button" id="btnClear" class="sub">保存を 消す</button>
-      </div>
-      <div class="out" id="outSave"></div>
-      <div class="note">名前・学校名は保存しません。ここで入れるのは練習用の番号だけです。</div>
-    </div>
-  </section>
-
-  <!-- 8 -->
-  <section class="card" id="c-screen">
-    <div class="head"><div class="num">8</div><h2>画面の向きと大きさ</h2><span class="badge" data-badge="screen">未</span></div>
-    <p class="desc">ゲームは横向き固定で作ります。今の向きと、使える画面の広さを見ます。</p>
-    <div class="body">
-      <dl class="kv" id="kvScreen"></dl>
-      <div class="row"><button type="button" id="btnFs" class="sub">全画面を 試す</button></div>
-      <div class="out" id="outScreen"></div>
-      <div class="note">iPadのSafariでは全画面にできないことがあります。その場合は「共有 → ホーム画面に追加」で全画面になります。</div>
-    </div>
-  </section>
-
-  <!-- 9 -->
-  <section class="card" id="c-net">
-    <div class="head"><div class="num">＋</div><h2>外部サイトに つながるか（任意）</h2><span class="badge" data-badge="net">未</span></div>
-    <p class="desc">このページ自体は<b>外部と通信していません</b>。下のボタンを押したときだけ、学校のフィルタの様子を調べるために3か所へ接続を試みます。</p>
-    <div class="body">
-      <div class="row"><button type="button" id="btnNet" class="sub">つながるか 調べる</button></div>
-      <dl class="kv" id="kvNet"></dl>
-      <div class="note">ここが×でもゲームは動きます（部品はすべて同梱するため）。ネットワークの制限を知るための参考情報です。</div>
-    </div>
-  </section>
-
-  <!-- summary -->
-  <section class="card" id="c-sum">
-    <div class="head"><div class="num">✓</div><h2>結果のまとめ</h2><span class="badge" data-badge="sum" data-state="info">保存用</span></div>
-    <p class="desc">下の文章をコピーして、先生のメモに貼り付けてください。個人情報は含まれません。</p>
-    <div class="body">
-      <div class="row">
-        <button type="button" id="btnMake">結果を つくる</button>
-        <button type="button" id="btnCopy" class="sub">コピーする</button>
-      </div>
-      <textarea id="summary" readonly placeholder="「結果を つくる」を押してください"></textarea>
-      <div class="out" id="outSum"></div>
-    </div>
-  </section>
-
 </div>
 
-<footer>
-  さんすうアイランド（仮）第0段階チェック / 外部送信なし・端末内のみ<br>
-  3D: Three.js r169 (MIT) を同梱
-</footer>
+<!-- ============ HUD ============ -->
+<div id="hud" class="hide">
+  <div class="hudL">
+    <span class="chip" id="hudWho"></span>
+    <span class="chip place" id="hudPlace"></span>
+  </div>
+  <div class="hudR">
+    <span class="chip">🪙 <span id="hudCoins">0</span></span>
+    <span id="fpsTag" class="hide">-- fps</span>
+    <button id="camBtn" class="sub">カメラ</button>
+    <button id="menuBtn">メニュー</button>
+  </div>
+</div>
+
+<!-- ============ そうさ ============ -->
+<div id="controls" class="hide">
+  <div id="stick"><div id="knob"></div></div>
+  <div id="talkHint"></div>
+  <div class="acts">
+    <button data-action="talk">はなす</button>
+    <button data-action="attack">たたかう</button>
+    <button data-action="jump">ジャンプ</button>
+  </div>
+</div>
+
+<!-- ============ メッセージ窓 ============ -->
+<div id="msg" class="hide">
+  <div id="msgName"></div>
+  <div id="msgText"></div>
+  <div class="msgBtns">
+    <button id="msgSpeak" class="sub">🔊 よみあげ</button>
+    <button id="msgNext">つぎへ</button>
+  </div>
+</div>
+
+
+<!-- ============ たたかい（敵・ボス） ============ -->
+<div id="enc" class="encWrap hide">
+  <div class="encCard">
+    <div class="encTop">
+      <span class="foe" id="encFoe"></span>
+      <span class="hearts" id="encFoeHp"></span>
+      <span class="draftTag hide" id="encTag">したがき</span>
+    </div>
+    <div id="encFig"></div>
+    <div id="encQ"></div>
+    <div id="encAns" class="encAns"></div>
+    <div id="encMsg" class="encMsg"></div>
+    <div class="encBottom">
+      <span class="me">あなた</span><span class="hearts" id="encMyHp"></span>
+      <button id="encSpeak" class="sub">🔊 よみあげ</button>
+      <button id="encClose" class="sub">にげる</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ クエスト ============ -->
+<div id="qst" class="encWrap hide">
+  <div class="encCard">
+    <div class="encTop">
+      <span><span id="qstTitle"></span><br><span id="qstGiver"></span></span>
+      <span id="qstStep"></span>
+    </div>
+    <div id="qstBody"></div>
+    <div id="qstTable"></div>
+    <div id="qstAns" class="encAns"></div>
+    <div id="qstMsg" class="encMsg"></div>
+    <div class="encBottom">
+      <button id="qstSpeak" class="sub">🔊 よみあげ</button>
+      <button id="qstClose" class="sub">やめる</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ============ ダンジョン ============ -->
+<div id="dgn" class="encWrap hide">
+  <div class="encCard">
+    <div class="encTop">
+      <span class="foe" id="dgnTitle"></span>
+      <span class="draftTag hide" id="dgnTag">したがき</span>
+    </div>
+    <div id="dgnDoors"></div>
+    <div id="dgnQ" class="encQ2"></div>
+    <div id="dgnAns" class="encAns"></div>
+    <div id="dgnMsg" class="encMsg"></div>
+    <div class="encBottom">
+      <button id="dgnSpeak" class="sub">🔊 よみあげ</button>
+      <button id="dgnClose" class="sub">そとへ でる</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 称号・持ち物・きろく ============ -->
+<div id="scr" class="encWrap hide">
+  <div class="menuCard">
+    <div class="menuHead">
+      <div class="scrTabs">
+        <button data-tab="titles">🏅 しょうごう</button>
+        <button data-tab="items">🎒 もちもの</button>
+        <button data-tab="records">📒 きろく</button>
+      </div>
+      <button id="scrClose" class="sub">とじる</button>
+    </div>
+    <div id="scrBody"></div>
+  </div>
+</div>
+
+<!-- ============ 着せかえ ============ -->
+<div id="cs" class="encWrap hide">
+  <div class="menuCard">
+    <canvas id="csCanvas"></canvas>
+    <div class="csSide">
+      <div class="csTabs">
+        <button data-cstab="hat">ぼうし</button>
+        <button data-cstab="face">かお</button>
+        <button data-cstab="item">もちもの</button>
+      </div>
+      <div id="csOpts"></div>
+      <div class="csFoot">
+        <button id="csOk">これにする！</button>
+        <button id="csCancel" class="sub">やめる</button>
+        <span id="csMsg"></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="pop"></div>
+
+<div id="banner"></div>
+<div id="toast"></div>
+
+<!-- ============ メニュー ============ -->
+<div id="menu" class="hide">
+  <div class="menuCard">
+    <div class="menuHead">
+      <h2>メニュー</h2>
+      <button id="menuClose" class="sub">とじる</button>
+    </div>
+    <div id="menuBody"></div>
+  </div>
+</div>
 
 <script>
-(function(){
-'use strict';
-var $  = function(s,r){ return (r||document).querySelector(s); };
-var $$ = function(s,r){ return Array.prototype.slice.call((r||document).querySelectorAll(s)); };
-
-/* ============ 判定のしくみ ============ */
-var LABELS = {
-  page:'1 ページ表示', gl:'3 3D表示', touch:'4 タッチ操作', speech:'5 読み上げ',
-  ruby:'6 ふりがな', save:'7 保存', screen:'8 画面の向き', net:'＋ 外部接続'
-};
-var SCORED = ['page','gl','touch','speech','ruby','save','screen','net'];
-var R = {};
-function setState(key, state, note){
-  R[key] = { state: state, note: note || '' };
-  var b = $('[data-badge="'+key+'"]');
-  if (b){
-    b.setAttribute('data-state', state);
-    b.textContent = ({ok:'○ OK', warn:'△ ちゅうい', ng:'× NG', info:'情報'})[state] || '未';
-  }
-  var n = 0;
-  SCORED.forEach(function(k){ if (R[k] && R[k].state === 'ok') n++; });
-  $('#scoreNum').textContent = n;
+// モジュールが動かない環境（ファイルを直接ひらいた場合など）に気づけるようにする
+window.addEventListener('error', e => {
+  const f = document.getElementById('fatal');
+  if (!f.classList.contains('hide')) return;
+  f.textContent = 'よみこみに しっぱいしました：' + (e.message || e.type) +
+    (location.protocol === 'file:' ? '\nファイルを 直接ひらくと 動きません。GitHub Pages か、ローカルサーバーで ひらいてください。' : '');
+  f.classList.remove('hide');
+});
+if (location.protocol === 'file:'){
+  const f = document.getElementById('fatal');
+  f.textContent = 'ファイルを 直接ひらくと 動きません。GitHub Pages か、python -m http.server で ひらいてください。';
+  f.classList.remove('hide');
 }
-function say(el, cls, msg){ var e = $(el); e.className = 'out ' + (cls||''); e.textContent = msg; }
-function kv(el, pairs){
-  $(el).innerHTML = pairs.map(function(p){
-    return '<dt>'+esc(p[0])+'</dt><dd>'+esc(String(p[1]))+'</dd>';
-  }).join('');
-}
-function esc(s){ return String(s).replace(/[&<>"]/g, function(c){
-  return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]; }); }
-
-/* ============ 1. ページ表示 ============ */
-var host = location.hostname || '(なし)';
-var isPages = /\.github\.io$/i.test(host);
-var isFile  = location.protocol === 'file:';
-kv('#kvPage', [
-  ['アドレス', location.href.split('?')[0]],
-  ['ホスト', host],
-  ['方式', location.protocol.replace(':','')],
-  ['安全な接続', window.isSecureContext ? 'はい' : 'いいえ']
-]);
-if (isPages) setState('page','ok','github.io で表示できた');
-else if (isFile) setState('page','warn','file:// で開いている（GitHub Pages では未確認）');
-else setState('page','warn','github.io 以外（'+host+'）で表示中');
-
-/* ============ 2. 端末情報 ============ */
-var ua = navigator.userAgent;
-var iOSver = (ua.match(/OS (\d+)[_.](\d+)/) || [])[0] || '';
-function refreshDev(){
-  kv('#kvDev', [
-    ['画面（CSS px）', window.innerWidth + ' × ' + window.innerHeight],
-    ['画面（実 px）', screen.width + ' × ' + screen.height],
-    ['解像度の倍率', (window.devicePixelRatio || 1)],
-    ['同時タッチ数', navigator.maxTouchPoints || 0],
-    ['言語', navigator.language || '-'],
-    ['iOS/iPadOS', iOSver ? iOSver.replace(/_/g,'.') : '（不明 / 非iOS）'],
-    ['ブラウザ情報', ua]
-  ]);
-}
-refreshDev();
-
-/* ============ 3. 3D ============ */
-var glReady = false;
-var quality = 2;
-function onGlFail(msg){
-  $('#stageMsg').textContent = msg;
-  $('#stageMsg').classList.remove('hide');
-  $('#btnBench').disabled = true;
-  setState('gl','ng', msg);
-  say('#outGl','ng', msg);
-}
-window.addEventListener('si3d-ready', function(){
-  glReady = true;
-  $('#stageMsg').classList.add('hide');
-  $('#btnBench').disabled = false;
-  var i = window.SI3D.info();
-  kv('#kvGl', [['えがく部品', i.renderer || '（非公開）'], ['三角形の数', i.tris]]);
-  say('#outGl','', '「10秒 なめらかさを はかる」を押してください。');
-});
-window.addEventListener('si3d-fail', function(e){ onGlFail(e.detail || '3Dを表示できませんでした。'); });
-if (isFile){
-  onGlFail('この3Dテストは file:// では動きません。GitHub Pages で開いてください。');
-}
-setTimeout(function(){
-  if (!glReady && !isFile && !R.gl) onGlFail('3Dの読み込みに時間がかかっています。通信または端末の問題の可能性があります。');
-}, 20000);
-
-$('#segQ').addEventListener('click', function(e){
-  var b = e.target.closest('button'); if (!b) return;
-  $$('#segQ button').forEach(function(x){ x.setAttribute('aria-pressed', String(x === b)); });
-  quality = parseFloat(b.dataset.q);
-  if (window.SI3D) window.SI3D.setQuality(quality);
-});
-$('#heavy').addEventListener('change', function(){
-  if (window.SI3D) window.SI3D.setHeavy(this.checked);
-});
-$('#btnBench').disabled = true;
-$('#btnBench').addEventListener('click', function(){
-  if (!window.SI3D) return;
-  var btn = this; btn.disabled = true;
-  say('#outGl','', 'はかっています… 画面にさわらずに待ってください。');
-  var left = 10, finished = false;
-  var tick = setInterval(function(){ left--; if (left > 0) say('#outGl','', 'はかっています… あと ' + left + ' 秒'); }, 1000);
-  var guard = setTimeout(function(){ if (!finished) done(null); }, 16000);
-  function done(res){
-    if (finished) return;
-    finished = true;
-    clearInterval(tick); clearTimeout(guard);
-    btn.disabled = false;
-    if (!res){ say('#outGl','warn','とちゅうで画面が切りかわったので中止しました。このページを表示したまま、もう一度押してください。'); return; }
-    var q = quality === 2 ? '高' : (quality === 1.5 ? '中' : '低');
-    var mode = q + '画質' + ($('#heavy').checked ? '・たくさん表示' : '');
-    var txt = '平均 ' + res.avg.toFixed(1) + ' fps ／ 遅いとき ' + res.low.toFixed(1) + ' fps（' + mode + '）';
-    var st = res.avg >= 30 ? 'ok' : (res.avg >= 20 ? 'warn' : 'ng');
-    var msg = st === 'ok' ? 'じゅうぶんなめらかです。' :
-              st === 'warn' ? '少しカクつきます。画質を下げるか、表示する物を減らす必要があります。' :
-              '重すぎます。この機種では作りをかなり軽くする必要があります。';
-    say('#outGl', st, txt + ' → ' + msg);
-    setState('gl', st, txt);
-    var i2 = window.SI3D.info();
-    kv('#kvGl', [['えがく部品', i2.renderer || '（非公開）'], ['三角形の数', i2.tris]]);
-  }
-  window.SI3D.startBench(10, done);
-});
-
-/* ============ 4. タッチ ============ */
-var stick = $('#stick'), knob = $('#knob');
-var stickMoved = false, maxTouch = 0, actDone = {};
-var sid = null, cx = 0, cy = 0, rad = 52;
-function setKnob(dx, dy){ knob.style.transform = 'translate(' + dx + 'px,' + dy + 'px)'; }
-function stickStart(e){
-  var t = e.changedTouches ? e.changedTouches[0] : e;
-  sid = e.changedTouches ? t.identifier : 'm';
-  var r = stick.getBoundingClientRect();
-  cx = r.left + r.width / 2; cy = r.top + r.height / 2;
-  stickMove(e);
-}
-function stickMove(e){
-  if (sid === null) return;
-  var t = e.changedTouches ? find(e.changedTouches) : e;
-  if (!t) return;
-  var dx = t.clientX - cx, dy = t.clientY - cy;
-  var d = Math.sqrt(dx * dx + dy * dy);
-  if (d > rad){ dx = dx / d * rad; dy = dy / d * rad; d = rad; }
-  setKnob(dx, dy);
-  if (d > 12){ stickMoved = true; refreshTouch(); }
-  if (window.SI3D) window.SI3D.setMove(dx / rad, dy / rad);
-  e.preventDefault();
-}
-function find(list){
-  for (var i = 0; i < list.length; i++) if (list[i].identifier === sid) return list[i];
-  return null;
-}
-function stickEnd(){ sid = null; setKnob(0,0); if (window.SI3D) window.SI3D.setMove(0,0); }
-stick.addEventListener('touchstart', function(e){ maxTouch = Math.max(maxTouch, e.touches.length); stickStart(e); e.preventDefault(); }, {passive:false});
-stick.addEventListener('touchmove', stickMove, {passive:false});
-stick.addEventListener('touchend', stickEnd);
-stick.addEventListener('touchcancel', stickEnd);
-stick.addEventListener('mousedown', function(e){ stickStart(e); e.preventDefault(); });
-window.addEventListener('mousemove', function(e){ if (sid === 'm') stickMove(e); });
-window.addEventListener('mouseup', function(){ if (sid === 'm') stickEnd(); });
-document.addEventListener('touchstart', function(e){ maxTouch = Math.max(maxTouch, e.touches.length); }, {passive:true});
-
-$$('.act').forEach(function(b){
-  b.addEventListener('click', function(){
-    b.dataset.done = '1';
-    actDone[b.dataset.act] = true;
-    if (window.SI3D) window.SI3D.hop();
-    refreshTouch();
-  });
-});
-function refreshTouch(){
-  var n = Object.keys(actDone).length;
-  kv('#kvTouch', [['スティック', stickMoved ? '動いた' : 'まだ'], ['押したボタン', n + ' / 3'], ['同時タッチの最大', maxTouch]]);
-  if (stickMoved && n === 3){
-    setState('touch','ok','スティック・ボタンとも反応');
-    say('#outTouch','ok','ぜんぶ反応しました。');
-  } else {
-    say('#outTouch','','スティックを動かし、3つのボタンを押してください。');
-  }
-}
-refreshTouch();
-
-/* ============ 5. 読み上げ ============ */
-var TEXT = 'さんすうアイランドへ ようこそ。2てん4かける0てん5の こたえは、2てん4より 大きいかな、小さいかな。';
-var synth = window.speechSynthesis;
-function voices(){ try { return synth ? synth.getVoices() : []; } catch(e){ return []; } }
-function showVoices(){
-  var all = voices();
-  var ja = all.filter(function(v){ return /^ja/i.test(v.lang); });
-  kv('#kvSpeech', [
-    ['読み上げ機能', synth ? 'あり' : 'なし'],
-    ['日本語の声', ja.length ? ja.map(function(v){ return v.name; }).join(' / ') : (all.length ? 'なし（' + all.length + '個の声はあるが日本語なし）' : '読み込み中…')]
-  ]);
-}
-if (!synth){
-  setState('speech','ng','読み上げ機能がありません');
-  say('#outSpeech','ng','このブラウザには読み上げ機能がありません。');
-  $('#btnSpeak').disabled = true;
-}
-showVoices();
-if (synth) synth.addEventListener('voiceschanged', showVoices);
-
-$('#btnBeep').addEventListener('click', function(){
-  try {
-    var AC = window.AudioContext || window.webkitAudioContext;
-    var ac = new AC();
-    if (ac.state === 'suspended') ac.resume();
-    var o = ac.createOscillator(), g = ac.createGain();
-    o.type = 'sine'; o.frequency.value = 880;
-    g.gain.setValueAtTime(0.0001, ac.currentTime);
-    g.gain.exponentialRampToValueAtTime(0.25, ac.currentTime + 0.02);
-    g.gain.exponentialRampToValueAtTime(0.0001, ac.currentTime + 0.45);
-    o.connect(g); g.connect(ac.destination);
-    o.start(); o.stop(ac.currentTime + 0.5);
-    say('#outSpeech','','「ポーン」と鳴りましたか？ 鳴らないときは音量と消音を確認してください。');
-  } catch(err){
-    say('#outSpeech','warn','音を出せませんでした：' + err.message);
-  }
-});
-$('#btnSpeak').addEventListener('click', function(){
-  try {
-    synth.cancel();
-    var u = new SpeechSynthesisUtterance(TEXT);
-    u.lang = 'ja-JP'; u.rate = 0.95; u.pitch = 1.05;
-    var ja = voices().filter(function(v){ return /^ja/i.test(v.lang); })[0];
-    if (ja) u.voice = ja;
-    u.onerror = function(ev){ say('#outSpeech','ng','読み上げでエラー：' + (ev.error || '不明')); };
-    u.onend = function(){ showVoices(); };
-    synth.speak(u);
-    say('#outSpeech','','読み上げています…「聞こえた / 聞こえない」を押してください。');
-  } catch(err){
-    say('#outSpeech','ng','読み上げできませんでした：' + err.message);
-    setState('speech','ng','読み上げ実行に失敗');
-  }
-});
-$$('[data-sp]').forEach(function(b){
-  b.addEventListener('click', function(){
-    if (b.dataset.sp === 'ok'){ setState('speech','ok','日本語の読み上げが聞こえた'); say('#outSpeech','ok','読み上げは使えます。'); }
-    else { setState('speech','ng','声が聞こえない'); say('#outSpeech','ng','音量・消音を確認してもう一度。それでもだめなら、読み上げは別の方法を考えます。'); }
-  });
-});
-
-/* ============ 6. ふりがな ============ */
-$('#btnRuby').addEventListener('click', function(){ $('#sampleRuby').classList.toggle('plain'); });
-$$('[data-rb]').forEach(function(b){
-  b.addEventListener('click', function(){
-    if (b.dataset.rb === 'ok'){ setState('ruby','ok','ルビが正しく表示'); say('#outRuby','ok','ふりがなは問題ありません。'); }
-    else { setState('ruby','ng','ルビの表示が崩れる'); say('#outRuby','ng','行間や重なりを調整する必要があります。'); }
-  });
-});
-
-/* ============ 7. 保存 ============ */
-var KEY = 'sansu-island-check:demo';
-function loadSave(){
-  try {
-    var raw = localStorage.getItem(KEY);
-    if (!raw){ say('#outSave','','まだ保存されていません。番号と色をえらんで「ほぞんする」を押してください。'); return null; }
-    var d = JSON.parse(raw);
-    $('#inNum').value = d.num; $('#inColor').value = d.color;
-    setState('save','ok','再読み込み後もデータが残っていた');
-    say('#outSave','ok','保存されていました：番号 ' + d.num + ' ／ ' + d.color + '（' + d.at + ' に保存）');
-    return d;
-  } catch(err){
-    setState('save','ng','保存を読めない：' + err.message);
-    say('#outSave','ng','保存を読み取れませんでした：' + err.message);
-    return null;
-  }
-}
-$('#btnSave').addEventListener('click', function(){
-  var d = { num: $('#inNum').value, color: $('#inColor').value, at: new Date().toLocaleString('ja-JP') };
-  try {
-    localStorage.setItem(KEY, JSON.stringify(d));
-    say('#outSave','warn','保存しました。つぎに「ページを 再読み込み」を押して、残っているか確かめてください。');
-    setState('save','warn','保存はできた（再読み込みの確認まち）');
-  } catch(err){
-    setState('save','ng','保存できない：' + err.message);
-    say('#outSave','ng','保存できませんでした：' + err.message + '（プライベートブラウズの可能性）');
-  }
-});
-$('#btnReload').addEventListener('click', function(){ location.reload(); });
-$('#btnClear').addEventListener('click', function(){
-  try { localStorage.removeItem(KEY); } catch(e){}
-  setState('save','','消した');
-  say('#outSave','','保存を消しました。');
-});
-loadSave();
-
-/* ============ 8. 画面 ============ */
-function refreshScreen(){
-  var land = window.innerWidth > window.innerHeight;
-  kv('#kvScreen', [
-    ['いまの向き', land ? '横向き' : 'たて向き'],
-    ['使える広さ', window.innerWidth + ' × ' + window.innerHeight],
-    ['全画面API', document.documentElement.requestFullscreen ? 'あり' : 'なし（iPad Safariでは通常なし）'],
-    ['ホーム画面から起動', (window.navigator.standalone || matchMedia('(display-mode: standalone)').matches) ? 'はい' : 'いいえ']
-  ]);
-  if (land){ setState('screen','ok','横向きで表示（' + window.innerWidth + '×' + window.innerHeight + '）'); say('#outScreen','ok','横向きです。'); }
-  else { setState('screen','warn','たて向き'); say('#outScreen','warn','iPadを横向きにしてください。'); }
-}
-window.addEventListener('resize', function(){ refreshScreen(); refreshDev(); });
-window.addEventListener('orientationchange', function(){ setTimeout(function(){ refreshScreen(); refreshDev(); }, 300); });
-refreshScreen();
-$('#btnFs').addEventListener('click', function(){
-  var el = document.documentElement;
-  var fn = el.requestFullscreen || el.webkitRequestFullscreen;
-  if (!fn){ say('#outScreen','warn','この端末では全画面にできません。「ホーム画面に追加」で全画面になります。'); return; }
-  try {
-    var p = fn.call(el);
-    if (p && p.catch) p.catch(function(e){ say('#outScreen','warn','全画面にできませんでした：' + e.message); });
-    else say('#outScreen','ok','全画面にしました。');
-  } catch(e){ say('#outScreen','warn','全画面にできませんでした：' + e.message); }
-});
-
-/* ============ ＋ 外部接続（押したときだけ） ============ */
-var NET = [
-  ['CDN（jsdelivr）', 'https://cdn.jsdelivr.net/npm/three@0.169.0/package.json'],
-  ['Googleフォント', 'https://fonts.googleapis.com/css2?family=Inter'],
-  ['GitHub（raw）', 'https://raw.githubusercontent.com/github/gitignore/main/README.md']
-];
-$('#btnNet').addEventListener('click', function(){
-  var btn = this; btn.disabled = true;
-  var res = NET.map(function(n){ return [n[0], '調べています…']; });
-  kv('#kvNet', res);
-  var done = 0;
-  NET.forEach(function(n, i){
-    var ctrl = new AbortController();
-    var to = setTimeout(function(){ ctrl.abort(); }, 8000);
-    fetch(n[1], { mode: 'no-cors', cache: 'no-store', signal: ctrl.signal })
-      .then(function(){ res[i][1] = '○ つながった'; })
-      .catch(function(err){ res[i][1] = '× つながらない（' + (err.name === 'AbortError' ? '時間切れ' : err.name) + '）'; })
-      .then(function(){
-        clearTimeout(to); kv('#kvNet', res);
-        if (++done === NET.length){
-          btn.disabled = false;
-          var ok = res.filter(function(r){ return r[1].charAt(0) === '○'; }).length;
-          setState('net', ok === NET.length ? 'ok' : (ok > 0 ? 'warn' : 'ng'), ok + '/' + NET.length + ' につながった');
-        }
-      });
-  });
-});
-
-/* ============ まとめ ============ */
-function buildSummary(){
-  var L = [];
-  L.push('さんすうアイランド 第0段階 動作チェック結果');
-  L.push('しらべた日時: ' + new Date().toLocaleString('ja-JP'));
-  L.push('ページ: ' + location.href.split('?')[0]);
-  L.push('');
-  L.push('【判定】');
-  SCORED.forEach(function(k){
-    var r = R[k] || {};
-    var mark = ({ok:'○', warn:'△', ng:'×'})[r.state] || '−';
-    L.push('  ' + mark + ' ' + LABELS[k] + (r.note ? ' … ' + r.note : ' … 未実施'));
-  });
-  L.push('');
-  L.push('【端末】');
-  L.push('  画面: ' + window.innerWidth + '×' + window.innerHeight + ' (実 ' + screen.width + '×' + screen.height + ', 倍率 ' + (window.devicePixelRatio || 1) + ')');
-  L.push('  同時タッチ: ' + (navigator.maxTouchPoints || 0));
-  L.push('  OS: ' + (iOSver ? iOSver.replace(/_/g, '.') : '不明'));
-  L.push('  UA: ' + ua);
-  L.push('');
-  L.push('※ 児童の名前などの個人情報は含まれません。');
-  return L.join('\n');
-}
-$('#btnMake').addEventListener('click', function(){
-  $('#summary').value = buildSummary();
-  say('#outSum','','できました。「コピーする」か、長押しで選んでコピーしてください。');
-});
-$('#btnCopy').addEventListener('click', function(){
-  var t = $('#summary');
-  if (!t.value) t.value = buildSummary();
-  var done = function(){ say('#outSum','ok','コピーしました。'); };
-  var fail = function(){
-    t.removeAttribute('readonly'); t.focus(); t.setSelectionRange(0, t.value.length);
-    var okc = false; try { okc = document.execCommand('copy'); } catch(e){}
-    t.setAttribute('readonly','');
-    if (okc) done(); else say('#outSum','warn','自動コピーできません。文章を長押しして選び、コピーしてください。');
-  };
-  if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(t.value).then(done, fail);
-  else fail();
-});
-
-})();
 </script>
-
 <script type="module">
-import * as THREE from './vendor/three.module.js';
-
-const canvas = document.getElementById('cv3d');
-let renderer;
-try {
-  renderer = new THREE.WebGLRenderer({ canvas, antialias: false, alpha: false, powerPreference: 'high-performance' });
-} catch (e) {
-  window.dispatchEvent(new CustomEvent('si3d-fail', { detail: 'この端末では3D（WebGL）を使えません：' + e.message }));
-  throw e;
-}
-renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
-
-const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x9fe0ff);
-scene.fog = new THREE.Fog(0x9fe0ff, 34, 78);
-
-const camera = new THREE.PerspectiveCamera(52, 16 / 9, 0.1, 200);
-camera.position.set(0, 6, 10);
-
-scene.add(new THREE.HemisphereLight(0xffffff, 0x8fbf88, 1.05));
-const sun = new THREE.DirectionalLight(0xffffff, 0.85);
-sun.position.set(6, 12, 8);
-scene.add(sun);
-
-const M = (c) => new THREE.MeshLambertMaterial({ color: c });
-
-// 海
-const sea = new THREE.Mesh(new THREE.CircleGeometry(60, 40), M(0x3aa8de));
-sea.rotation.x = -Math.PI / 2; sea.position.y = -2.2; scene.add(sea);
-for (let i = 0; i < 3; i++) {
-  const ring = new THREE.Mesh(new THREE.RingGeometry(8.6 + i * 1.5, 9.1 + i * 1.5, 40),
-    new THREE.MeshBasicMaterial({ color: 0xcdefff, transparent: true, opacity: 0.4 - i * 0.1, side: THREE.DoubleSide }));
-  ring.rotation.x = -Math.PI / 2; ring.position.y = -2.15 + i * 0.01; scene.add(ring);
-}
-// 島
-const sand = new THREE.Mesh(new THREE.CylinderGeometry(7.6, 8.4, 1.8, 30), M(0xf3e2ae));
-sand.position.y = -1.5; scene.add(sand);
-const grass = new THREE.Mesh(new THREE.CylinderGeometry(6.8, 7.2, 0.9, 30), M(0x67c96e));
-grass.position.y = -0.45; scene.add(grass);
-
-const rng = (() => { let s = 20260920; return () => (s = (s * 16807) % 2147483647) / 2147483647; })();
-const deco = new THREE.Group(); scene.add(deco);
-const trunkG = new THREE.CylinderGeometry(0.17, 0.24, 1.0, 8);
-const leafG  = new THREE.ConeGeometry(0.9, 1.3, 9);
-const leafG2 = new THREE.ConeGeometry(0.62, 1.0, 9);
-const trunkM = M(0xa5713f), leafM = M(0x3fae5a), leafM2 = M(0x54c46b);
-for (let i = 0; i < 11; i++) {
-  const a = rng() * Math.PI * 2, r = 2.8 + rng() * 3.2;
-  const t = new THREE.Group();
-  const tr = new THREE.Mesh(trunkG, trunkM); tr.position.y = 0.5; t.add(tr);
-  const l1 = new THREE.Mesh(leafG, leafM);  l1.position.y = 1.45; t.add(l1);
-  const l2 = new THREE.Mesh(leafG2, leafM2); l2.position.y = 2.1; t.add(l2);
-  t.position.set(Math.cos(a) * r, 0, Math.sin(a) * r);
-  const s = 0.8 + rng() * 0.5; t.scale.setScalar(s);
-  deco.add(t);
-}
-const rockG = new THREE.IcosahedronGeometry(0.45, 0), rockM = M(0x9fadb8);
-const flowG = new THREE.SphereGeometry(0.15, 8, 6);
-const flowM = [M(0xff8fb1), M(0xffe066), M(0xffffff)];
-for (let i = 0; i < 24; i++) {
-  const a = rng() * Math.PI * 2, r = 1.6 + rng() * 4.6;
-  if (i % 3 === 0) {
-    const k = new THREE.Mesh(rockG, rockM);
-    k.position.set(Math.cos(a) * r, 0.15, Math.sin(a) * r);
-    k.scale.set(1, 0.7 + rng() * 0.5, 1); k.rotation.y = rng() * 3; deco.add(k);
-  } else {
-    const f = new THREE.Mesh(flowG, flowM[i % 3]);
-    f.position.set(Math.cos(a) * r, 0.12, Math.sin(a) * r); deco.add(f);
+import { boot } from './src/game.js';
+// 島づくりに1秒ほどかかるので、先に「しまを つくっています…」を出してから始める
+setTimeout(async () => {
+  try {
+    await boot();
+  } catch (e){
+    const f = document.getElementById('fatal');
+    f.textContent = 'よみこみに しっぱいしました：' + (e?.message || e);
+    f.classList.remove('hide');
+    console.error(e);
   }
-}
-// 主人公
-const hero = new THREE.Group(); scene.add(hero);
-const body = new THREE.Group(); hero.add(body);
-const ball = new THREE.Mesh(new THREE.SphereGeometry(0.62, 22, 16), M(0x7ad1ff));
-ball.scale.y = 0.92; ball.position.y = 0.6; body.add(ball);
-const eyeW = new THREE.MeshBasicMaterial({ color: 0xffffff });
-const eyeB = new THREE.MeshBasicMaterial({ color: 0x21384a });
-[-0.21, 0.21].forEach((x) => {
-  const w = new THREE.Mesh(new THREE.SphereGeometry(0.15, 12, 10), eyeW);
-  w.position.set(x, 0.68, 0.47); body.add(w);
-  const p = new THREE.Mesh(new THREE.SphereGeometry(0.075, 10, 8), eyeB);
-  p.position.set(x, 0.67, 0.57); body.add(p);
-});
-const hat = new THREE.Mesh(new THREE.ConeGeometry(0.42, 0.52, 14), M(0xff7a7a));
-hat.position.y = 1.22; body.add(hat);
-const shadow = new THREE.Mesh(new THREE.CircleGeometry(0.52, 18),
-  new THREE.MeshBasicMaterial({ color: 0x1d5a3a, transparent: true, opacity: 0.17 }));
-shadow.rotation.x = -Math.PI / 2; shadow.position.y = 0.02; hero.add(shadow);
-
-// 負荷テスト用
-const heavyG = new THREE.Group(); heavyG.visible = false; scene.add(heavyG);
-const hGeo = [new THREE.SphereGeometry(0.28, 12, 10), new THREE.ConeGeometry(0.3, 0.6, 8), new THREE.BoxGeometry(0.4, 0.4, 0.4)];
-const hMat = [M(0xffc357), M(0xff7a7a), M(0xb08cff), M(0x7ad1ff)];
-const orbs = [];
-for (let i = 0; i < 220; i++) {
-  const m = new THREE.Mesh(hGeo[i % 3], hMat[i % 4]);
-  const a = rng() * Math.PI * 2, r = 1.5 + rng() * 5.5;
-  m.userData = { a, r, y: 0.4 + rng() * 2.6, sp: 0.2 + rng() * 0.6 };
-  heavyG.add(m); orbs.push(m);
-}
-
-let quality = 2, move = { x: 0, y: 0 }, hopT = -1, heading = 0;
-function resize() {
-  const w = canvas.clientWidth || 640, h = canvas.clientHeight || 360;
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, quality));
-  renderer.setSize(w, h, false);
-  camera.aspect = w / h; camera.updateProjectionMatrix();
-}
-resize();
-if (window.ResizeObserver) new ResizeObserver(resize).observe(canvas);
-window.addEventListener('resize', resize);
-
-let bench = null;
-const fpsTag = document.getElementById('fpsTag');
-let fpsN = 0, fpsT = 0;
-const camPos = new THREE.Vector3(0, 6, 10), camLook = new THREE.Vector3();
-let last = performance.now();
-function loop(now) {
-  requestAnimationFrame(loop);
-  if (document.hidden) { last = now; return; }
-  let dt = (now - last) / 1000; last = now;
-  if (dt > 0.1) dt = 0.1;
-  const t = now / 1000;
-
-  const sp = 4.2;
-  hero.position.x += move.x * sp * dt;
-  hero.position.z += move.y * sp * dt;
-  const d = Math.hypot(hero.position.x, hero.position.z);
-  if (d > 6.2) { hero.position.x *= 6.2 / d; hero.position.z *= 6.2 / d; }
-  const moving = Math.hypot(move.x, move.y) > 0.08;
-  if (moving) {
-    const want = Math.atan2(move.x, move.y);
-    let diff = ((want - heading + Math.PI * 3) % (Math.PI * 2)) - Math.PI;
-    heading += diff * Math.min(1, dt * 10);
-  }
-  body.rotation.y = heading;
-  let bob = moving ? Math.abs(Math.sin(t * 8)) * 0.14 : Math.sin(t * 2) * 0.03;
-  if (hopT >= 0) { hopT += dt; const p = hopT / 0.5; bob += p < 1 ? Math.sin(p * Math.PI) * 0.9 : (hopT = -1, 0); }
-  body.position.y = bob;
-  shadow.scale.setScalar(1 - bob * 0.35);
-
-  if (heavyG.visible) for (const m of orbs) {
-    m.userData.a += m.userData.sp * dt;
-    m.position.set(Math.cos(m.userData.a) * m.userData.r, m.userData.y + Math.sin(t * 2 + m.userData.r) * 0.2, Math.sin(m.userData.a) * m.userData.r);
-    m.rotation.y += dt;
-  }
-
-  camPos.set(hero.position.x * 0.5, 6, hero.position.z * 0.5 + 10.5);
-  camera.position.lerp(camPos, Math.min(1, dt * 3));
-  camLook.set(hero.position.x, 1.0, hero.position.z);
-  camera.lookAt(camLook);
-
-  renderer.render(scene, camera);
-
-  fpsN++; fpsT += dt;
-  if (fpsT >= 0.4) { fpsTag.textContent = Math.round(fpsN / fpsT) + ' fps'; fpsN = 0; fpsT = 0; }
-
-  if (bench) {
-    bench.frames.push(dt);
-    if (now >= bench.end) {
-      const f = bench.frames.slice(2).sort((a, b) => a - b);
-      const sum = f.reduce((a, b) => a + b, 0);
-      const avg = f.length / sum;
-      const p95 = f[Math.min(f.length - 1, Math.floor(f.length * 0.95))] || sum / f.length;
-      const cb = bench.cb; bench = null;
-      cb({ avg, low: 1 / p95, frames: f.length });
-    }
-  }
-}
-requestAnimationFrame(loop);
-
-// 別の画面に切りかわると描画が止まるので、計測中なら中止する
-document.addEventListener('visibilitychange', () => {
-  if (document.hidden) {
-    fpsTag.textContent = '-- fps';
-    if (bench) { const cb = bench.cb; bench = null; cb(null); }
-  }
-});
-
-window.SI3D = {
-  setMove(x, y) { move.x = x; move.y = y; },
-  hop() { if (hopT < 0) hopT = 0; },
-  setQuality(q) { quality = q; resize(); },
-  setHeavy(on) { heavyG.visible = !!on; },
-  startBench(sec, cb) {
-    if (document.hidden) { cb(null); return; }
-    bench = { frames: [], end: performance.now() + sec * 1000, cb };
-  },
-  info() {
-    let r = '';
-    try {
-      const gl = renderer.getContext();
-      const ex = gl.getExtension('WEBGL_debug_renderer_info');
-      if (ex) r = gl.getParameter(ex.UNMASKED_RENDERER_WEBGL);
-    } catch (e) {}
-    return { renderer: r, tris: renderer.info.render.triangles };
-  }
-};
-
-// 最初の1枚を描いてから「準備できた」を知らせる（三角形の数もここで確定する）
-renderer.render(scene, camera);
-window.dispatchEvent(new Event('si3d-ready'));
+  document.getElementById('splash')?.remove();
+}, 60);
 </script>
 </body>
 </html>

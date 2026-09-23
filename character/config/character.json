@@ -1,0 +1,152 @@
+{
+  "_note": "主人公キャラ一式の設定（キャラ生成・選択画面 設計書 4〜6・8・9章）。形や色を変えるときは、このファイルだけを直す。src/character.js がこの数値から組み立てる。別のキャラに差し替えるときは、このファイルと textures/faces.png を入れかえる。パーツID（cap, gills, body, arm_L…）と動きID（idle, walk…）はキャラが変わっても共通。",
+  "name": "キノコの こども（仮）",
+  "scale": 1.25,
+  "outline": {
+    "width": 0.035,
+    "color": "#1b1410"
+  },
+  "toonSteps": 3,
+  "parts": {
+    "cap": {
+      "radius": 0.66,
+      "squash": 0.62,
+      "y": 1.18,
+      "color": "#8b5a3c"
+    },
+    "gills": {
+      "radius": 0.6,
+      "y": 1.02,
+      "color": "#f1e2c6",
+      "lineColor": "#c9b08a",
+      "lines": 28
+    },
+    "body": {
+      "topRadius": 0.25,
+      "bottomRadius": 0.36,
+      "height": 0.66,
+      "y": 0.62,
+      "color": "#f4e6cc"
+    },
+    "arm": {
+      "length": 0.36,
+      "radius": 0.07,
+      "handRadius": 0.1,
+      "x": 0.34,
+      "y": 0.72,
+      "color": "#f4e6cc"
+    },
+    "leg": {
+      "length": 0.26,
+      "radius": 0.09,
+      "x": 0.14,
+      "y": 0.2,
+      "color": "#e8d5b3"
+    },
+    "wing": {
+      "width": 0.54,
+      "height": 0.42,
+      "x": 0.22,
+      "y": 0.7,
+      "z": -0.3,
+      "color": "#efe6ff",
+      "edge": "#c8b6ef"
+    },
+    "face": {
+      "phiStart": 1.02,
+      "phiLength": 1.1,
+      "thetaStart": 1.22,
+      "thetaLength": 0.72
+    },
+    "hat": {
+      "radius": 0.44,
+      "height": 0.3,
+      "brim": 0.34,
+      "y": 1.52,
+      "tilt": -0.12,
+      "buttonColor": "#ffffff"
+    }
+  },
+  "hatColors": [
+    {
+      "id": "yellow",
+      "name": "{黄色|きいろ}",
+      "color": "#f5c518",
+      "initial": true
+    },
+    {
+      "id": "red",
+      "name": "{赤|あか}",
+      "color": "#e2463f"
+    },
+    {
+      "id": "blue",
+      "name": "{青|あお}",
+      "color": "#2f7fd6"
+    },
+    {
+      "id": "green",
+      "name": "{緑|みどり}",
+      "color": "#3aa655"
+    },
+    {
+      "id": "pink",
+      "name": "ピンク",
+      "color": "#f28ab2"
+    },
+    {
+      "id": "white",
+      "name": "{白|しろ}",
+      "color": "#f4f4f4"
+    }
+  ],
+  "faces": [
+    {
+      "id": "smile",
+      "name": "にこにこ",
+      "auto": "cheer"
+    },
+    {
+      "id": "surprise",
+      "name": "びっくり",
+      "auto": "jump"
+    },
+    {
+      "id": "fight",
+      "name": "がんばる",
+      "auto": "attack"
+    },
+    {
+      "id": "sad",
+      "name": "かなしい",
+      "auto": "damaged"
+    }
+  ],
+  "faceTexture": "character/textures/faces.png",
+  "animations": {
+    "idle": {
+      "duration": 2.0,
+      "loop": true
+    },
+    "walk": {
+      "duration": 0.8,
+      "loop": true
+    },
+    "jump": {
+      "duration": 0.8,
+      "loop": false
+    },
+    "cheer": {
+      "duration": 1.2,
+      "loop": false
+    },
+    "attack": {
+      "duration": 0.6,
+      "loop": false
+    },
+    "damaged": {
+      "duration": 0.8,
+      "loop": false
+    }
+  }
+}

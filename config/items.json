@@ -1,0 +1,34 @@
+{
+  "_note": "持ち物（出題・称号・報酬 実装計画書 8章）。3Dモデルは9種＋どんぐり。色（学年）と柄（敵の種類×段階）は表面の絵で変える。モデルはすべて src/items.js がコードで作る。",
+  "initial": [
+    { "id": "item_acorn", "name": "どんぐり", "model": "acorn", "initial": true }
+  ],
+  "models": {
+    "knowledge": { "A": "tool_A", "B": "tool_B", "C": "tool_C", "D": "tool_D" },
+    "thinking":  { "A": "acc_A",  "B": "acc_B",  "C": "acc_C",  "D": "acc_D" },
+    "allClear": "crown"
+  },
+  "modelNames": {
+    "acorn":  "どんぐり",
+    "tool_A": "かずの つえ",
+    "tool_B": "さんかく じょうぎ",
+    "tool_C": "ものさし ソード",
+    "tool_D": "グラフの はた",
+    "acc_A":  "ひらめきの ほうせき",
+    "acc_B":  "かたちの メダル",
+    "acc_C":  "はかりの ペンダント",
+    "acc_D":  "よみときの ルーペ",
+    "crown":  "しまの かんむり"
+  },
+  "patterns": {
+    "_note": "同じ領域の敵2種で持ち物が重ならないよう、柄のセットを分ける。段階2・4・5の順に豪華になる。",
+    "first":  ["plain", "stripe", "sparkle"],
+    "second": ["dots",  "check",  "star"]
+  },
+  "patternNames": {
+    "plain": "むじ", "stripe": "しま", "sparkle": "きらきら",
+    "dots": "みずたま", "check": "チェック", "star": "ほし",
+    "q1": "にじ", "q2": "ハート", "q3": "なみ", "q4": "くも"
+  },
+  "questPatterns": ["q1", "q2", "q3", "q4"]
+}

@@ -1,0 +1,20 @@
+{
+  "_note": "ボス24体の管理表（敵・ボス・NPC設計書 5章）。file があるものだけ戦える。問うのは概念的な理解で、毎回同じ問題・同じ順番（選択肢の並びだけ入れかえる）。",
+  "bosses": [
+    { "id": "boss-g5-A", "grade": 5, "domain": "A", "name": "ブンスウリュウ",   "yomi": "ぶんすうりゅう",   "concept": "等しい分数・通分の意味", "file": "bosses/boss-g5-A.json" },
+    { "id": "boss-g5-B", "grade": 5, "domain": "B", "name": "カクドゴーレム",   "yomi": "かくどごーれむ",   "concept": "三角形・四角形の角の和", "file": "bosses/boss-g5-B.json" },
+    { "id": "boss-g5-C", "grade": 5, "domain": "C", "name": "ワリアイオオカミ", "yomi": "わりあいおおかみ", "concept": "割合（比べる量・もとにする量）", "file": "bosses/boss-g5-C.json" },
+    { "id": "boss-g5-D", "grade": 5, "domain": "D", "name": "ヘイキンクジラ",   "yomi": "へいきんくじら",   "concept": "平均の意味（ならす）",           "file": "bosses/boss-g5-D.json" },
+
+    { "id": "boss-g1-A", "grade": 1, "domain": "A" }, { "id": "boss-g1-B", "grade": 1, "domain": "B" },
+    { "id": "boss-g1-C", "grade": 1, "domain": "C" }, { "id": "boss-g1-D", "grade": 1, "domain": "D" },
+    { "id": "boss-g2-A", "grade": 2, "domain": "A" }, { "id": "boss-g2-B", "grade": 2, "domain": "B" },
+    { "id": "boss-g2-C", "grade": 2, "domain": "C" }, { "id": "boss-g2-D", "grade": 2, "domain": "D" },
+    { "id": "boss-g3-A", "grade": 3, "domain": "A" }, { "id": "boss-g3-B", "grade": 3, "domain": "B" },
+    { "id": "boss-g3-C", "grade": 3, "domain": "C" }, { "id": "boss-g3-D", "grade": 3, "domain": "D" },
+    { "id": "boss-g4-A", "grade": 4, "domain": "A" }, { "id": "boss-g4-B", "grade": 4, "domain": "B" },
+    { "id": "boss-g4-C", "grade": 4, "domain": "C" }, { "id": "boss-g4-D", "grade": 4, "domain": "D" },
+    { "id": "boss-g6-A", "grade": 6, "domain": "A" }, { "id": "boss-g6-B", "grade": 6, "domain": "B" },
+    { "id": "boss-g6-C", "grade": 6, "domain": "C" }, { "id": "boss-g6-D", "grade": 6, "domain": "D" }
+  ]
+}

@@ -1,0 +1,4 @@
+#playtestNotice{position:fixed;bottom:3px;left:50%;transform:translateX(-50%);max-width:48vw;z-index:34;background:#fff2cf;color:#5d3d0c;border:1px solid #d49f32;border-radius:8px;padding:4px 10px;font-size:12px;pointer-events:none;text-align:center}
+.playtestRef{display:flex;flex-wrap:wrap;align-items:center;gap:8px;background:#fff4d7;border:1px solid #d5af5a;border-radius:10px;padding:8px;margin:6px 0;font-size:13px;color:#5d3d0c;line-height:1.6;overflow-wrap:anywhere}
+.playtestRef button{min-height:44px;padding:6px 12px;font-size:14px}
+.playtestRef [role=status]{flex-basis:100%}

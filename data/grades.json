@@ -1,0 +1,11 @@
+{
+  "_note": "学年ごとの敵の色と数値（敵・ボス・NPC設計書 3-2）。timeLimit は「入れるかどうか未決」なので、config/titles.json の useTimeLimit が false のあいだは使わない。",
+  "grades": [
+    { "grade": 1, "color": "#ff8fb8", "colorName": "ピンク",   "hp": 1, "speed": 0.8, "timeLimit": null },
+    { "grade": 2, "color": "#ff9d4a", "colorName": "オレンジ", "hp": 1, "speed": 0.8, "timeLimit": null },
+    { "grade": 3, "color": "#f2c230", "colorName": "き",       "hp": 2, "speed": 1.1, "timeLimit": null },
+    { "grade": 4, "color": "#5cbf5a", "colorName": "みどり",   "hp": 2, "speed": 1.1, "timeLimit": 60 },
+    { "grade": 5, "color": "#4a8fe0", "colorName": "あお",     "hp": 3, "speed": 1.5, "timeLimit": 45 },
+    { "grade": 6, "color": "#9a6fd6", "colorName": "むらさき", "hp": 3, "speed": 1.5, "timeLimit": 45 }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "_note": "ボス挑戦権・持ち物・全クリアの条件（出題・称号・報酬 実装計画書 7・8章）。持ち物・挑戦権・全クリアは保存せず、毎回ここから計算する。",
+  "bossUnlock": {
+    "boss-g5-A": {
+      "requireTitles": [ { "enemy": "g5_A1", "minLevel": 3 }, { "enemy": "g5_A2", "minLevel": 3 } ],
+      "requireDungeon": "dungeon-g5-A"
+    },
+    "boss-g5-B": {
+      "requireTitles": [ { "enemy": "g5_B1", "minLevel": 3 }, { "enemy": "g5_B2", "minLevel": 3 } ],
+      "requireDungeon": "dungeon-g5-B"
+    },
+    "boss-g5-C": {
+      "requireTitles": [ { "enemy": "g5_C1", "minLevel": 3 }, { "enemy": "g5_C2", "minLevel": 3 } ],
+      "requireDungeon": "dungeon-g5-C"
+    },
+    "boss-g5-D": {
+      "requireTitles": [ { "enemy": "g5_D1", "minLevel": 3 }, { "enemy": "g5_D2", "minLevel": 3 } ],
+      "requireDungeon": "dungeon-g5-D"
+    }
+  },
+  "titleRewardLevels": [2, 4, 5],
+  "allClear": {
+    "titles": 240,
+    "bosses": 24,
+    "_quests_dungeons": "クエスト・ダンジョンの総数は data から数える"
+  }
+}

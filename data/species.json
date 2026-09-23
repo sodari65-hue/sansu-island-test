@@ -1,0 +1,13 @@
+{
+  "_note": "敵8種類（4領域×2系統）。学年ごとの違いは grades.json の色と数値だけ。モデルは共通。名前・モチーフは仮（敵・ボス・NPC設計書 3-1）。",
+  "species": [
+    { "id": "A1", "domain": "A", "name": "かずっこ",         "motif": "数字の形をしたスライム", "move": "hop" },
+    { "id": "A2", "domain": "A", "name": "けいさんバチ",     "motif": "＋−×÷の模様のハチ",     "move": "fly" },
+    { "id": "B1", "domain": "B", "name": "かたちブロック",   "motif": "積み木のいきもの",       "move": "roll" },
+    { "id": "B2", "domain": "B", "name": "ますますガメ",     "motif": "甲羅がマス目のカメ",     "move": "slow" },
+    { "id": "C1", "domain": "C", "name": "はかりドリ",       "motif": "定規のくちばしの鳥",     "move": "peck" },
+    { "id": "C2", "domain": "C", "name": "とけいモグラ",     "motif": "時計の顔のモグラ",       "move": "burrow" },
+    { "id": "D1", "domain": "D", "name": "グラフンボ",       "motif": "体が棒グラフのキノコ",   "move": "stretch" },
+    { "id": "D2", "domain": "D", "name": "ヨミトリフクロウ", "motif": "めがねのフクロウ",       "move": "perch" }
+  ]
+}
