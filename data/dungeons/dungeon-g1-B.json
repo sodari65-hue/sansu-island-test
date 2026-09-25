@@ -1,0 +1,74 @@
+{
+  "id": "dungeon-g1-B",
+  "grade": 1,
+  "domain": "B",
+  "name": "かたちの どうくつ",
+  "status": "draft",
+  "knowledgeFrom": [
+    "g1_B1",
+    "g1_B2"
+  ],
+  "sequence": [
+    "knowledge",
+    "knowledge",
+    "thinking:dq-g1-B-01",
+    "knowledge",
+    "thinking:dq-g1-B-02"
+  ],
+  "thinking": [
+    {
+      "id": "dq-g1-B-01",
+      "unit": "みのまわりのかたち",
+      "aspect": "thinking",
+      "format": "twoStep",
+      "text": "さんかくの かどは いくつ？",
+      "choices": [
+        "3つ",
+        "4つ",
+        "2つ"
+      ],
+      "answer": 0,
+      "reasons": [
+        "さんかくには かどが 3つ あるから",
+        "しかくの かどを かぞえたから",
+        "へんを 1つ わすれたから"
+      ],
+      "reasonAnswer": 0,
+      "hints": {
+        "1": "さんかくの へんの つなぎめを かぞえよう。",
+        "2": "さんかくの へんの つなぎめを かぞえよう。"
+      },
+      "reasonHints": {
+        "1": "さんかくの へんの つなぎめを かぞえよう。",
+        "2": "さんかくの へんの つなぎめを かぞえよう。"
+      }
+    },
+    {
+      "id": "dq-g1-B-02",
+      "unit": "みのまわりのかたち",
+      "aspect": "thinking",
+      "format": "twoStep",
+      "text": "まると しかく。かどが あるのは どっち？",
+      "choices": [
+        "しかく",
+        "まる",
+        "どちらも"
+      ],
+      "answer": 0,
+      "reasons": [
+        "しかくには かどが 4つ あるから",
+        "まるにも かどが あると おもうから",
+        "ふちが あれば かども あると おもうから"
+      ],
+      "reasonAnswer": 0,
+      "hints": {
+        "1": "まるい ふちは まがりつづけるよ。",
+        "2": "まるい ふちは まがりつづけるよ。"
+      },
+      "reasonHints": {
+        "1": "まるい ふちは まがりつづけるよ。",
+        "2": "まるい ふちは まがりつづけるよ。"
+      }
+    }
+  ]
+}

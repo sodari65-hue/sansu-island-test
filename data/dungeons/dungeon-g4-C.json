@@ -1,0 +1,74 @@
+{
+  "id": "dungeon-g4-C",
+  "grade": 4,
+  "domain": "C",
+  "name": "かわりかたの どうくつ",
+  "status": "draft",
+  "knowledgeFrom": [
+    "g4_C1",
+    "g4_C2"
+  ],
+  "sequence": [
+    "knowledge",
+    "knowledge",
+    "thinking:dq-g4-C-01",
+    "knowledge",
+    "thinking:dq-g4-C-02"
+  ],
+  "thinking": [
+    {
+      "id": "dq-g4-C-01",
+      "unit": "変わり方",
+      "aspect": "thinking",
+      "format": "twoStep",
+      "text": "1こ 5円の けしゴム。1こ、2こ、3この ねだんは 5円、10円、何円？",
+      "choices": [
+        "15円",
+        "10円",
+        "20円"
+      ],
+      "answer": 0,
+      "reasons": [
+        "1こ ふえるたびに 5円 ふえるから",
+        "2この ねだんを そのまま 書いたから",
+        "10円を 2ばいに したから"
+      ],
+      "reasonAnswer": 0,
+      "hints": {
+        "1": "10円から もう 1こぶん ふえるよ。",
+        "2": "10円から もう 1こぶん ふえるよ。"
+      },
+      "reasonHints": {
+        "1": "10円から もう 1こぶん ふえるよ。",
+        "2": "10円から もう 1こぶん ふえるよ。"
+      }
+    },
+    {
+      "id": "dq-g4-C-02",
+      "unit": "変わり方",
+      "aspect": "thinking",
+      "format": "twoStep",
+      "text": "1こ 2円の ボタン。2こで 4円、3こでは 何円？",
+      "choices": [
+        "6円",
+        "5円",
+        "4円"
+      ],
+      "answer": 0,
+      "reasons": [
+        "1こ ふえると 2円 ふえるから",
+        "4円に 1円だけ たしたから",
+        "2この ねだんのままだから"
+      ],
+      "reasonAnswer": 0,
+      "hints": {
+        "1": "4円に 1こぶんの 2円を たそう。",
+        "2": "4円に 1こぶんの 2円を たそう。"
+      },
+      "reasonHints": {
+        "1": "4円に 1こぶんの 2円を たそう。",
+        "2": "4円に 1こぶんの 2円を たそう。"
+      }
+    }
+  ]
+}

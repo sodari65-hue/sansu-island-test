@@ -1,0 +1,74 @@
+{
+  "id": "dungeon-g4-D",
+  "grade": 4,
+  "domain": "D",
+  "name": "せんグラフの どうくつ",
+  "status": "draft",
+  "knowledgeFrom": [
+    "g4_D1",
+    "g4_D2"
+  ],
+  "sequence": [
+    "knowledge",
+    "knowledge",
+    "thinking:dq-g4-D-01",
+    "knowledge",
+    "thinking:dq-g4-D-02"
+  ],
+  "thinking": [
+    {
+      "id": "dq-g4-D-01",
+      "unit": "折れ線グラフ",
+      "aspect": "thinking",
+      "format": "twoStep",
+      "text": "折れ線グラフの 水の 温度は 朝 10度、昼 20度。何度 上がった？",
+      "choices": [
+        "10度",
+        "30度",
+        "20度"
+      ],
+      "answer": 0,
+      "reasons": [
+        "20－10＝10で ちがいを 出すから",
+        "2つの 温度を たしたから",
+        "昼の 温度だけを こたえたから"
+      ],
+      "reasonAnswer": 0,
+      "hints": {
+        "1": "上がった 分は ちがいだよ。",
+        "2": "上がった 分は ちがいだよ。"
+      },
+      "reasonHints": {
+        "1": "上がった 分は ちがいだよ。",
+        "2": "上がった 分は ちがいだよ。"
+      }
+    },
+    {
+      "id": "dq-g4-D-02",
+      "unit": "折れ線グラフ",
+      "aspect": "thinking",
+      "format": "twoStep",
+      "text": "折れ線グラフの 気温は 金曜 14度、土曜 14度。どう 変わった？",
+      "choices": [
+        "変わらない",
+        "14度 上がった",
+        "14度 下がった"
+      ],
+      "answer": 0,
+      "reasons": [
+        "2つの 日の 気温が 同じだから",
+        "土曜の 気温を そのまま 上がり方と したから",
+        "金曜の 気温を そのまま 下がり方と したから"
+      ],
+      "reasonAnswer": 0,
+      "hints": {
+        "1": "2つの 数が おなじだよ。",
+        "2": "2つの 数が おなじだよ。"
+      },
+      "reasonHints": {
+        "1": "2つの 数が おなじだよ。",
+        "2": "2つの 数が おなじだよ。"
+      }
+    }
+  ]
+}

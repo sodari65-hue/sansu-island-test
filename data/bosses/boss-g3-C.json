@@ -1,0 +1,68 @@
+{
+  "id": "boss-g3-C",
+  "grade": 3,
+  "domain": "C",
+  "name": "おもさオオカミ",
+  "yomi": "おもさおおかみ",
+  "concept": "重さ",
+  "unit": "重さ",
+  "aspect": "concept",
+  "status": "draft",
+  "hp": 4,
+  "taunt": "1kgと 500gを あわせると 501gだ！",
+  "stages": [
+    {
+      "kind": "twoStep",
+      "format": "twoStep",
+      "text": "1kgは {何|なん}g？",
+      "choices": [
+        "1000g",
+        "100g",
+        "10g"
+      ],
+      "answer": 0,
+      "reasons": [
+        "1kgは 1000gと きまっているから",
+        "0を 2つだけ つけたから",
+        "0を 1つだけ つけたから"
+      ],
+      "reasonAnswer": 0,
+      "hints": {
+        "1": "kgを gに なおして みよう。",
+        "2": "kgを gに なおして みよう。"
+      },
+      "reasonHints": {
+        "1": "kgを gに なおして みよう。",
+        "2": "kgを gに なおして みよう。"
+      }
+    },
+    {
+      "kind": "twoStep",
+      "format": "twoStep",
+      "text": "1kgと 500gを あわせると {何|なん}g？",
+      "choices": [
+        "1500g",
+        "501g",
+        "500g"
+      ],
+      "answer": 0,
+      "reasons": [
+        "1kgを 1000gに なおして 500gを たすから",
+        "1と 500を そのまま たすから",
+        "1kgの ぶんを いれないから"
+      ],
+      "reasonAnswer": 0,
+      "hints": {
+        "1": "1kgは 1000gだよ。",
+        "2": "1kgは 1000gだよ。"
+      },
+      "reasonHints": {
+        "1": "1kgは 1000gだよ。",
+        "2": "1kgは 1000gだよ。"
+      }
+    }
+  ],
+  "beaten": [
+    "ちがう たんいは そろえてから たそう。"
+  ]
+}

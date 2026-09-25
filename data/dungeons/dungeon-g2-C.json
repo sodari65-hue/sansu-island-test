@@ -1,0 +1,74 @@
+{
+  "id": "dungeon-g2-C",
+  "grade": 2,
+  "domain": "C",
+  "name": "じかんの どうくつ",
+  "status": "draft",
+  "knowledgeFrom": [
+    "g2_C1",
+    "g2_C2"
+  ],
+  "sequence": [
+    "knowledge",
+    "knowledge",
+    "thinking:dq-g2-C-01",
+    "knowledge",
+    "thinking:dq-g2-C-02"
+  ],
+  "thinking": [
+    {
+      "id": "dq-g2-C-01",
+      "unit": "時こくと時間",
+      "aspect": "thinking",
+      "format": "twoStep",
+      "text": "9じから 11じまで。なんじかん？",
+      "choices": [
+        "2じかん",
+        "20じかん",
+        "11じかん"
+      ],
+      "answer": 0,
+      "reasons": [
+        "9じから 10じ、11じまで 2じかんだから",
+        "9と 11を たしたから",
+        "おわりの じこくを こたえたから"
+      ],
+      "reasonAnswer": 0,
+      "hints": {
+        "1": "9じから じこくを 1つずつ すすめよう。",
+        "2": "9じから じこくを 1つずつ すすめよう。"
+      },
+      "reasonHints": {
+        "1": "9じから じこくを 1つずつ すすめよう。",
+        "2": "9じから じこくを 1つずつ すすめよう。"
+      }
+    },
+    {
+      "id": "dq-g2-C-02",
+      "unit": "時こくと時間",
+      "aspect": "thinking",
+      "format": "twoStep",
+      "text": "1じから 1じかん たつと なんじ？",
+      "choices": [
+        "2じ",
+        "1じ",
+        "3じ"
+      ],
+      "answer": 0,
+      "reasons": [
+        "1じから とけいが 1じかん すすむから",
+        "じかんが たっても じこくは かわらないから",
+        "1に 2を たすから"
+      ],
+      "reasonAnswer": 0,
+      "hints": {
+        "1": "1じの つぎの じこくは？",
+        "2": "1じの つぎの じこくは？"
+      },
+      "reasonHints": {
+        "1": "1じの つぎの じこくは？",
+        "2": "1じの つぎの じこくは？"
+      }
+    }
+  ]
+}

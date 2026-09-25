@@ -1,0 +1,74 @@
+{
+  "id": "dungeon-g2-D",
+  "grade": 2,
+  "domain": "D",
+  "name": "ひょうの どうくつ",
+  "status": "draft",
+  "knowledgeFrom": [
+    "g2_D1",
+    "g2_D2"
+  ],
+  "sequence": [
+    "knowledge",
+    "knowledge",
+    "thinking:dq-g2-D-01",
+    "knowledge",
+    "thinking:dq-g2-D-02"
+  ],
+  "thinking": [
+    {
+      "id": "dq-g2-D-01",
+      "unit": "ひょうとグラフ",
+      "aspect": "thinking",
+      "format": "twoStep",
+      "text": "ひょうで、ねこ 8ひき、いぬ 5ひき。ねこは なんびき おおい？",
+      "choices": [
+        "3びき",
+        "13びき",
+        "5ひき"
+      ],
+      "answer": 0,
+      "reasons": [
+        "8から 5を ひくと 3だから",
+        "8と 5を たしたから",
+        "いぬの かずを こたえたから"
+      ],
+      "reasonAnswer": 0,
+      "hints": {
+        "1": "おおい ほうから すくない ほうを ひこう。",
+        "2": "おおい ほうから すくない ほうを ひこう。"
+      },
+      "reasonHints": {
+        "1": "おおい ほうから すくない ほうを ひこう。",
+        "2": "おおい ほうから すくない ほうを ひこう。"
+      }
+    },
+    {
+      "id": "dq-g2-D-02",
+      "unit": "ひょうとグラフ",
+      "aspect": "thinking",
+      "format": "twoStep",
+      "text": "ひょうで、バナナ 2こ、ぶどう 9こ。すくないのは？",
+      "choices": [
+        "バナナ",
+        "ぶどう",
+        "おなじ"
+      ],
+      "answer": 0,
+      "reasons": [
+        "2こは 9こより すくないから",
+        "9の ほうが おおきいから",
+        "どちらも くだものだから"
+      ],
+      "reasonAnswer": 0,
+      "hints": {
+        "1": "2と 9を くらべよう。",
+        "2": "2と 9を くらべよう。"
+      },
+      "reasonHints": {
+        "1": "2と 9を くらべよう。",
+        "2": "2と 9を くらべよう。"
+      }
+    }
+  ]
+}

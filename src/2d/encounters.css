@@ -1,0 +1,54 @@
+.enc2d{display:grid;gap:12px;min-width:0;color:#213f38}
+.enc2d *{box-sizing:border-box}
+.enc2d h3{font-size:20px;margin:0;line-height:1.45}
+.enc2d button{font:inherit;cursor:pointer;min-height:48px;border:2px solid #cddac5;border-radius:12px;background:#fffdf5;color:#213f38;padding:8px 12px;touch-action:manipulation}
+.enc2d button:focus-visible{outline:4px solid #de9d2e;outline-offset:2px}
+.enc2d button:disabled{opacity:.5;cursor:default}
+.enc2d-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.enc2d-status{font-weight:800;background:#e8edd5;border-radius:20px;padding:5px 12px}
+.enc2d-context{background:#eef2df;border-radius:12px;padding:10px 14px}
+.enc2d-context p{margin:8px 0 0}
+.enc2d-ref{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:12px;color:#5f6d58}
+.enc2d-ref button{font-size:13px;min-height:42px}
+.enc2d-prompt{font-size:20px;line-height:1.8;white-space:pre-line}
+.enc2d-subprompt{font-size:17px;margin-top:8px}
+.enc2d-table{overflow-x:auto}
+.enc2d-table:empty{display:none}
+.enc2d-table table{border-collapse:collapse;width:100%;background:#fff}
+.enc2d-table th,.enc2d-table td{border:1px solid #bccbb8;padding:8px;text-align:left}
+.enc2d-table th{background:#edf1df}
+.enc2d .encAns.choices{display:grid;gap:8px}
+.enc2d .ansBtn{text-align:left;width:100%;min-height:54px}
+.enc2d .enc2d-primary{background:#226c58;color:#fff;border-color:#226c58;text-align:center;font-weight:800}
+.enc2d-message{min-height:28px;color:#8a4e22}
+.enc2d-message.ok{color:#226c58;font-weight:700}
+.enc2d-message.ng{color:#a13b2c}
+.enc2d-controls{display:flex;justify-content:flex-end}
+.enc2d .enc2d-exit{font-size:14px;min-height:42px}
+.enc2d .enc2d-picked{border-color:#226c58;background:#e5edcf}
+.enc2d .tsHead,.enc2d .tsChosen{padding:5px 0}
+.enc2d .tsNum{color:#226c58;font-weight:800;margin-right:8px}
+.enc2d-number{max-width:360px;margin:auto;width:100%}
+.enc2d-number output{display:block;text-align:right;font-size:25px;background:#edf1df;border-radius:9px;padding:8px;margin-bottom:8px}
+.enc2d-pad{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.enc2d-pad button{font-size:19px}
+.enc2d-pad button:last-child{grid-column:1/-1}
+.enc2d-bar{display:grid;gap:10px}
+.enc2d-track{height:58px;border:2px solid #35495e;border-radius:9px;position:relative;touch-action:none;background:repeating-linear-gradient(90deg,#edf1df 0 4.9%,#bccbb8 5% 5.1%);overflow:hidden}
+.enc2d-track:focus-visible{outline:4px solid #de9d2e;outline-offset:3px}
+.enc2d-fill{height:100%;width:0;background:#4ab6acaa;pointer-events:none}
+.enc2d-bar output{text-align:center;font-size:22px;font-weight:700}
+.enc2d-columns{display:flex;gap:8px;align-items:end;justify-content:center}
+.enc2d-columns button{display:flex;flex:1;max-width:130px;flex-direction:column;align-items:center;gap:6px}
+.enc2d-stack{display:flex;flex-direction:column-reverse;gap:2px;min-height:130px;justify-content:end}
+.enc2d-stack i{display:block;width:34px;height:13px;background:#74b7a0;border:1px solid #36765e;border-radius:3px}
+.enc2d .mathWidget{display:flex;flex-direction:column;gap:10px;touch-action:manipulation}
+.enc2d .fractionStrip{display:flex;width:100%;border:2px solid #35495e;border-radius:8px;overflow:hidden;min-height:48px;background:#fff}
+.enc2d .fractionStrip>span,.enc2d .fractionStrip>button{flex:1;min-width:0;border:0;border-right:2px solid #35495e;background:#f4f6f8;color:#203344;min-height:48px;padding:6px 0;border-radius:0}
+.enc2d .fractionStrip>:last-child{border-right:0}
+.enc2d .fractionStrip>.filled{background:#4ab6ac;color:#102e2a}
+.enc2d .angleDiagram{display:flex;gap:8px;background:#fff;border-radius:12px}
+.enc2d .angleDiagram svg{width:50%;max-height:165px;color:#203344;font:15px sans-serif}
+.enc2d .angleControls{display:flex;flex-wrap:wrap;gap:6px}
+.enc2d .angleControls button{flex:1;min-width:100px;border-width:3px}
+@media(max-width:600px){.enc2d-prompt{font-size:18px}.enc2d-head{display:block}.enc2d-status{display:inline-block;margin-top:8px}.enc2d .angleDiagram{display:block}.enc2d .angleDiagram svg{width:100%}}

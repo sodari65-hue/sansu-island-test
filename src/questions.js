@@ -68,7 +68,9 @@ export function createQuestionManager({ getState, allowDraft }){
       }
     });
     for (const [sid, units] of Object.entries(unitsMap)){
-      pools.set(`g${grade}_${sid}`, all.filter(q => units.includes(q.unit)));
+      // species を明示した問題は、単元が共通でもその敵だけに入れる。
+      // タグのない既存問題は unit による従来どおりの振り分けを保つ。
+      pools.set(`g${grade}_${sid}`, all.filter(q => q.species ? q.species === sid : units.includes(q.unit)));
     }
     return all;
   }

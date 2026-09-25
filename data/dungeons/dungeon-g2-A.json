@@ -1,0 +1,74 @@
+{
+  "id": "dungeon-g2-A",
+  "grade": 2,
+  "domain": "A",
+  "name": "九九の どうくつ",
+  "status": "draft",
+  "knowledgeFrom": [
+    "g2_A1",
+    "g2_A2"
+  ],
+  "sequence": [
+    "knowledge",
+    "knowledge",
+    "thinking:dq-g2-A-01",
+    "knowledge",
+    "thinking:dq-g2-A-02"
+  ],
+  "thinking": [
+    {
+      "id": "dq-g2-A-01",
+      "unit": "九九",
+      "aspect": "thinking",
+      "format": "twoStep",
+      "text": "4ほんずつの えんぴつが 2はこ。ぜんぶで なんぼん？",
+      "choices": [
+        "8ほん",
+        "6ぽん",
+        "2ほん"
+      ],
+      "answer": 0,
+      "reasons": [
+        "4ほんが 2はこなので 4×2だから",
+        "4と 2を たすから",
+        "はこの かずだけ こたえるから"
+      ],
+      "reasonAnswer": 0,
+      "hints": {
+        "1": "4ほんの まとまりを 2つ かぞえよう。",
+        "2": "4ほんの まとまりを 2つ かぞえよう。"
+      },
+      "reasonHints": {
+        "1": "4ほんの まとまりを 2つ かぞえよう。",
+        "2": "4ほんの まとまりを 2つ かぞえよう。"
+      }
+    },
+    {
+      "id": "dq-g2-A-02",
+      "unit": "九九",
+      "aspect": "thinking",
+      "format": "twoStep",
+      "text": "6こずつの あめが 3ふくろ。ぜんぶで なんこ？",
+      "choices": [
+        "18こ",
+        "9こ",
+        "3こ"
+      ],
+      "answer": 0,
+      "reasons": [
+        "6こが 3ふくろなので 6×3だから",
+        "6と 3を たすから",
+        "ふくろの かずだけ こたえるから"
+      ],
+      "reasonAnswer": 0,
+      "hints": {
+        "1": "6こを 3かい たそう。",
+        "2": "6こを 3かい たそう。"
+      },
+      "reasonHints": {
+        "1": "6こを 3かい たそう。",
+        "2": "6こを 3かい たそう。"
+      }
+    }
+  ]
+}

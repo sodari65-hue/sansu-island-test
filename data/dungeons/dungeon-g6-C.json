@@ -1,0 +1,74 @@
+{
+  "id": "dungeon-g6-C",
+  "grade": 6,
+  "domain": "C",
+  "name": "ひれいの どうくつ",
+  "status": "draft",
+  "knowledgeFrom": [
+    "g6_C1",
+    "g6_C2"
+  ],
+  "sequence": [
+    "knowledge",
+    "knowledge",
+    "thinking:dq-g6-C-01",
+    "knowledge",
+    "thinking:dq-g6-C-02"
+  ],
+  "thinking": [
+    {
+      "id": "dq-g6-C-01",
+      "unit": "比例",
+      "aspect": "thinking",
+      "format": "twoStep",
+      "text": "1こ 5円の シール。3こでは 何円？",
+      "choices": [
+        "15円",
+        "8円",
+        "5円"
+      ],
+      "answer": 0,
+      "reasons": [
+        "こすうが 3倍なので 代金も 3倍だから",
+        "5と 3を たしたから",
+        "1この 代金のままだから"
+      ],
+      "reasonAnswer": 0,
+      "hints": {
+        "1": "5円を 3回 たそう。",
+        "2": "5円を 3回 たそう。"
+      },
+      "reasonHints": {
+        "1": "5円を 3回 たそう。",
+        "2": "5円を 3回 たそう。"
+      }
+    },
+    {
+      "id": "dq-g6-C-02",
+      "unit": "比例",
+      "aspect": "thinking",
+      "format": "twoStep",
+      "text": "1本 6円の ペン。4本では 何円？",
+      "choices": [
+        "24円",
+        "10円",
+        "6円"
+      ],
+      "answer": 0,
+      "reasons": [
+        "本数が 4倍なので 代金も 4倍だから",
+        "6と 4を たしたから",
+        "1本の 代金のままだから"
+      ],
+      "reasonAnswer": 0,
+      "hints": {
+        "1": "6円が 4本ぶん。",
+        "2": "6円が 4本ぶん。"
+      },
+      "reasonHints": {
+        "1": "6円が 4本ぶん。",
+        "2": "6円が 4本ぶん。"
+      }
+    }
+  ]
+}

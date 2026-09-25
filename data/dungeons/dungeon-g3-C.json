@@ -1,0 +1,74 @@
+{
+  "id": "dungeon-g3-C",
+  "grade": 3,
+  "domain": "C",
+  "name": "おもさの どうくつ",
+  "status": "draft",
+  "knowledgeFrom": [
+    "g3_C1",
+    "g3_C2"
+  ],
+  "sequence": [
+    "knowledge",
+    "knowledge",
+    "thinking:dq-g3-C-01",
+    "knowledge",
+    "thinking:dq-g3-C-02"
+  ],
+  "thinking": [
+    {
+      "id": "dq-g3-C-01",
+      "unit": "重さ",
+      "aspect": "thinking",
+      "format": "twoStep",
+      "text": "2kgは {何|なん}g？",
+      "choices": [
+        "2000g",
+        "200g",
+        "1000g"
+      ],
+      "answer": 0,
+      "reasons": [
+        "1kgが 1000gで、2つぶんだから",
+        "0を 2つだけ つけたから",
+        "1kgの ぶんだけ こたえたから"
+      ],
+      "reasonAnswer": 0,
+      "hints": {
+        "1": "1000gが 2つぶん。",
+        "2": "1000gが 2つぶん。"
+      },
+      "reasonHints": {
+        "1": "1000gが 2つぶん。",
+        "2": "1000gが 2つぶん。"
+      }
+    },
+    {
+      "id": "dq-g3-C-02",
+      "unit": "重さ",
+      "aspect": "thinking",
+      "format": "twoStep",
+      "text": "800gと 200gを あわせると {何|なん}kg？",
+      "choices": [
+        "1kg",
+        "10kg",
+        "100kg"
+      ],
+      "answer": 0,
+      "reasons": [
+        "800g＋200g＝1000gで、1kgだから",
+        "1000gを 10kgと おもったから",
+        "1000gを 100kgと おもったから"
+      ],
+      "reasonAnswer": 0,
+      "hints": {
+        "1": "まず gで たそう。",
+        "2": "まず gで たそう。"
+      },
+      "reasonHints": {
+        "1": "まず gで たそう。",
+        "2": "まず gで たそう。"
+      }
+    }
+  ]
+}

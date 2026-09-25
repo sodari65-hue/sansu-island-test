@@ -1,0 +1,74 @@
+{
+  "id": "dungeon-g4-B",
+  "grade": 4,
+  "domain": "B",
+  "name": "めんせきの どうくつ",
+  "status": "draft",
+  "knowledgeFrom": [
+    "g4_B1",
+    "g4_B2"
+  ],
+  "sequence": [
+    "knowledge",
+    "knowledge",
+    "thinking:dq-g4-B-01",
+    "knowledge",
+    "thinking:dq-g4-B-02"
+  ],
+  "thinking": [
+    {
+      "id": "dq-g4-B-01",
+      "unit": "面積",
+      "aspect": "thinking",
+      "format": "twoStep",
+      "text": "たて 2cm、よこ 6cmの 長方形の 面積は？",
+      "choices": [
+        "12cm²",
+        "8cm²",
+        "16cm²"
+      ],
+      "answer": 0,
+      "reasons": [
+        "2×6で 1cm²の ますの 数を 出すから",
+        "2と 6を たしたから",
+        "まわりの 長さを 出したから"
+      ],
+      "reasonAnswer": 0,
+      "hints": {
+        "1": "2cmの れつが 6こ あるよ。",
+        "2": "2cmの れつが 6こ あるよ。"
+      },
+      "reasonHints": {
+        "1": "2cmの れつが 6こ あるよ。",
+        "2": "2cmの れつが 6こ あるよ。"
+      }
+    },
+    {
+      "id": "dq-g4-B-02",
+      "unit": "面積",
+      "aspect": "thinking",
+      "format": "twoStep",
+      "text": "1辺が 3cmの 正方形の 面積は？",
+      "choices": [
+        "9cm²",
+        "6cm²",
+        "12cm²"
+      ],
+      "answer": 0,
+      "reasons": [
+        "3×3で 1cm²の ますの 数を 出すから",
+        "2辺を たしたから",
+        "4つの 辺を たしたから"
+      ],
+      "reasonAnswer": 0,
+      "hints": {
+        "1": "たて×よこを 考えよう。",
+        "2": "たて×よこを 考えよう。"
+      },
+      "reasonHints": {
+        "1": "たて×よこを 考えよう。",
+        "2": "たて×よこを 考えよう。"
+      }
+    }
+  ]
+}

@@ -1,0 +1,74 @@
+{
+  "id": "dungeon-g1-A",
+  "grade": 1,
+  "domain": "A",
+  "name": "かずの どうくつ",
+  "status": "draft",
+  "knowledgeFrom": [
+    "g1_A1",
+    "g1_A2"
+  ],
+  "sequence": [
+    "knowledge",
+    "knowledge",
+    "thinking:dq-g1-A-01",
+    "knowledge",
+    "thinking:dq-g1-A-02"
+  ],
+  "thinking": [
+    {
+      "id": "dq-g1-A-01",
+      "unit": "たしざん",
+      "aspect": "thinking",
+      "format": "twoStep",
+      "text": "こどもが 4にん あそんでいる。3にん きた。いま なんにん？",
+      "choices": [
+        "7にん",
+        "3にん",
+        "1にん"
+      ],
+      "answer": 0,
+      "reasons": [
+        "4にんに 3にんを たすから",
+        "きた 3にんだけ かぞえるから",
+        "4から 3を ひくから"
+      ],
+      "reasonAnswer": 0,
+      "hints": {
+        "1": "きたら ふえるよ。",
+        "2": "きたら ふえるよ。"
+      },
+      "reasonHints": {
+        "1": "きたら ふえるよ。",
+        "2": "きたら ふえるよ。"
+      }
+    },
+    {
+      "id": "dq-g1-A-02",
+      "unit": "たしざん",
+      "aspect": "thinking",
+      "format": "twoStep",
+      "text": "あめが 6こ。2こ もらった。あわせて なんこ？",
+      "choices": [
+        "8こ",
+        "6こ",
+        "4こ"
+      ],
+      "answer": 0,
+      "reasons": [
+        "6こに 2こを たすから",
+        "はじめの 6こだけ かぞえるから",
+        "6から 2を ひくから"
+      ],
+      "reasonAnswer": 0,
+      "hints": {
+        "1": "もらった ぶんも いれよう。",
+        "2": "もらった ぶんも いれよう。"
+      },
+      "reasonHints": {
+        "1": "もらった ぶんも いれよう。",
+        "2": "もらった ぶんも いれよう。"
+      }
+    }
+  ]
+}

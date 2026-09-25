@@ -1,0 +1,74 @@
+{
+  "id": "dungeon-g6-A",
+  "grade": 6,
+  "domain": "A",
+  "name": "ぶんすうの どうくつ",
+  "status": "draft",
+  "knowledgeFrom": [
+    "g6_A1",
+    "g6_A2"
+  ],
+  "sequence": [
+    "knowledge",
+    "knowledge",
+    "thinking:dq-g6-A-01",
+    "knowledge",
+    "thinking:dq-g6-A-02"
+  ],
+  "thinking": [
+    {
+      "id": "dq-g6-A-01",
+      "unit": "分数のかけ算",
+      "aspect": "thinking",
+      "format": "twoStep",
+      "text": "4分の3mの 3分の1は 何m？",
+      "choices": [
+        "4分の1m",
+        "12分の5m",
+        "4分の3m"
+      ],
+      "answer": 0,
+      "reasons": [
+        "4分の3は 4分の1が 3つで、その 3分の1は 1つだから",
+        "4分の3から 3分の1を ひいたから",
+        "3分の1を とる 前の 長さだから"
+      ],
+      "reasonAnswer": 0,
+      "hints": {
+        "1": "4分の1mが 3つ あるよ。",
+        "2": "4分の1mが 3つ あるよ。"
+      },
+      "reasonHints": {
+        "1": "4分の1mが 3つ あるよ。",
+        "2": "4分の1mが 3つ あるよ。"
+      }
+    },
+    {
+      "id": "dq-g6-A-02",
+      "unit": "分数のかけ算",
+      "aspect": "thinking",
+      "format": "twoStep",
+      "text": "5分の2Lの 2分の1は 何L？",
+      "choices": [
+        "5分の1L",
+        "10分の3L",
+        "5分の2L"
+      ],
+      "answer": 0,
+      "reasons": [
+        "5分の1が 2つなので 半分は 5分の1だから",
+        "分母と 分子を たして しまったから",
+        "半分に する 前の 量だから"
+      ],
+      "reasonAnswer": 0,
+      "hints": {
+        "1": "5分の1Lを もとに 考えよう。",
+        "2": "5分の1Lを もとに 考えよう。"
+      },
+      "reasonHints": {
+        "1": "5分の1Lを もとに 考えよう。",
+        "2": "5分の1Lを もとに 考えよう。"
+      }
+    }
+  ]
+}

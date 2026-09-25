@@ -1,0 +1,74 @@
+{
+  "id": "dungeon-g4-A",
+  "grade": 4,
+  "domain": "A",
+  "name": "がいすうの どうくつ",
+  "status": "draft",
+  "knowledgeFrom": [
+    "g4_A1",
+    "g4_A2"
+  ],
+  "sequence": [
+    "knowledge",
+    "knowledge",
+    "thinking:dq-g4-A-01",
+    "knowledge",
+    "thinking:dq-g4-A-02"
+  ],
+  "thinking": [
+    {
+      "id": "dq-g4-A-01",
+      "unit": "がい数",
+      "aspect": "thinking",
+      "format": "twoStep",
+      "text": "568を 十の位までの がい数に すると？",
+      "choices": [
+        "570",
+        "560",
+        "600"
+      ],
+      "answer": 0,
+      "reasons": [
+        "一の位が 8なので 十の位を 1ふやすから",
+        "一の位を ただ 0に するから",
+        "百の位までの がい数に したから"
+      ],
+      "reasonAnswer": 0,
+      "hints": {
+        "1": "一の位が 8だよ。",
+        "2": "一の位が 8だよ。"
+      },
+      "reasonHints": {
+        "1": "一の位が 8だよ。",
+        "2": "一の位が 8だよ。"
+      }
+    },
+    {
+      "id": "dq-g4-A-02",
+      "unit": "がい数",
+      "aspect": "thinking",
+      "format": "twoStep",
+      "text": "913を 十の位までの がい数に すると？",
+      "choices": [
+        "910",
+        "920",
+        "900"
+      ],
+      "answer": 0,
+      "reasons": [
+        "一の位が 3なので 十の位は そのままだから",
+        "一の位が 3でも 切り上げるから",
+        "百の位までの がい数に したから"
+      ],
+      "reasonAnswer": 0,
+      "hints": {
+        "1": "一の位が 5より 小さいよ。",
+        "2": "一の位が 5より 小さいよ。"
+      },
+      "reasonHints": {
+        "1": "一の位が 5より 小さいよ。",
+        "2": "一の位が 5より 小さいよ。"
+      }
+    }
+  ]
+}

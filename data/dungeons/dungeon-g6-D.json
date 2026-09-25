@@ -1,0 +1,74 @@
+{
+  "id": "dungeon-g6-D",
+  "grade": 6,
+  "domain": "D",
+  "name": "ばあいのかずの どうくつ",
+  "status": "draft",
+  "knowledgeFrom": [
+    "g6_D1",
+    "g6_D2"
+  ],
+  "sequence": [
+    "knowledge",
+    "knowledge",
+    "thinking:dq-g6-D-01",
+    "knowledge",
+    "thinking:dq-g6-D-02"
+  ],
+  "thinking": [
+    {
+      "id": "dq-g6-D-01",
+      "unit": "場合の数",
+      "aspect": "thinking",
+      "format": "twoStep",
+      "text": "ぼうしは 赤・青・黄、くつは 白・黒。1つずつ 選ぶと 何通り？",
+      "choices": [
+        "6通り",
+        "5通り",
+        "3通り"
+      ],
+      "answer": 0,
+      "reasons": [
+        "ぼうし 3通りの それぞれに くつ 2通りが あるから",
+        "3と 2を たしたから",
+        "ぼうしの 数だけ かぞえたから"
+      ],
+      "reasonAnswer": 0,
+      "hints": {
+        "1": "ぼうし ごとに くつは 2通り。",
+        "2": "ぼうし ごとに くつは 2通り。"
+      },
+      "reasonHints": {
+        "1": "ぼうし ごとに くつは 2通り。",
+        "2": "ぼうし ごとに くつは 2通り。"
+      }
+    },
+    {
+      "id": "dq-g6-D-02",
+      "unit": "場合の数",
+      "aspect": "thinking",
+      "format": "twoStep",
+      "text": "主菜は 魚・肉、副菜は サラダ・スープ。1つずつ 選ぶと 何通り？",
+      "choices": [
+        "4通り",
+        "2通り",
+        "3通り"
+      ],
+      "answer": 0,
+      "reasons": [
+        "主菜 2通りの それぞれに 副菜 2通りが あるから",
+        "主菜だけを かぞえたから",
+        "1つだけ 見落としたから"
+      ],
+      "reasonAnswer": 0,
+      "hints": {
+        "1": "魚では 2通り、肉でも 2通り。",
+        "2": "魚では 2通り、肉でも 2通り。"
+      },
+      "reasonHints": {
+        "1": "魚では 2通り、肉でも 2通り。",
+        "2": "魚では 2通り、肉でも 2通り。"
+      }
+    }
+  ]
+}

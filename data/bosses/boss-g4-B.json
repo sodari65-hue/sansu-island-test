@@ -1,0 +1,68 @@
+{
+  "id": "boss-g4-B",
+  "grade": 4,
+  "domain": "B",
+  "name": "めんせきゴーレム",
+  "yomi": "めんせきごーれむ",
+  "concept": "面積",
+  "unit": "面積",
+  "aspect": "concept",
+  "status": "draft",
+  "hp": 4,
+  "taunt": "たて 3cm、よこ 4cmの 長方形の 面積は 7cm²だ！",
+  "stages": [
+    {
+      "kind": "twoStep",
+      "format": "twoStep",
+      "text": "たて 3cm、よこ 4cmの 長方形の 面積は？",
+      "choices": [
+        "12cm²",
+        "7cm²",
+        "14cm²"
+      ],
+      "answer": 0,
+      "reasons": [
+        "1cm²の ますが 3×4こ あるから",
+        "たてと よこを たしたから",
+        "まわりの 長さを 出したから"
+      ],
+      "reasonAnswer": 0,
+      "hints": {
+        "1": "1cm²の ますが 何こ はいるかな？",
+        "2": "1cm²の ますが 何こ はいるかな？"
+      },
+      "reasonHints": {
+        "1": "1cm²の ますが 何こ はいるかな？",
+        "2": "1cm²の ますが 何こ はいるかな？"
+      }
+    },
+    {
+      "kind": "twoStep",
+      "format": "twoStep",
+      "text": "1辺が 5cmの 正方形の 面積は？",
+      "choices": [
+        "25cm²",
+        "20cm²",
+        "10cm²"
+      ],
+      "answer": 0,
+      "reasons": [
+        "5×5で ますの 数を 出すから",
+        "まわりの 長さを 出したから",
+        "2辺を たしたから"
+      ],
+      "reasonAnswer": 0,
+      "hints": {
+        "1": "たても よこも 5cmだよ。",
+        "2": "たても よこも 5cmだよ。"
+      },
+      "reasonHints": {
+        "1": "たても よこも 5cmだよ。",
+        "2": "たても よこも 5cmだよ。"
+      }
+    }
+  ],
+  "beaten": [
+    "長方形の 面積は たて×よこで 求められるね。"
+  ]
+}

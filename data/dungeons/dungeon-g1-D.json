@@ -1,0 +1,74 @@
+{
+  "id": "dungeon-g1-D",
+  "grade": 1,
+  "domain": "D",
+  "name": "えと かずの どうくつ",
+  "status": "draft",
+  "knowledgeFrom": [
+    "g1_D1",
+    "g1_D2"
+  ],
+  "sequence": [
+    "knowledge",
+    "knowledge",
+    "thinking:dq-g1-D-01",
+    "knowledge",
+    "thinking:dq-g1-D-02"
+  ],
+  "thinking": [
+    {
+      "id": "dq-g1-D-01",
+      "unit": "えやずでかずをあらわす",
+      "aspect": "thinking",
+      "format": "twoStep",
+      "text": "えの ひょうで、ねこ ●●、いぬ ●●●。いぬは ねこより なんびき おおい？",
+      "choices": [
+        "1ぴき",
+        "2ひき",
+        "5ひき"
+      ],
+      "answer": 0,
+      "reasons": [
+        "3びきと 2ひきの ちがいは 1ぴきだから",
+        "ねこの かずを こたえたから",
+        "ぜんぶを あわせたから"
+      ],
+      "reasonAnswer": 0,
+      "hints": {
+        "1": "3と 2を くらべよう。",
+        "2": "3と 2を くらべよう。"
+      },
+      "reasonHints": {
+        "1": "3と 2を くらべよう。",
+        "2": "3と 2を くらべよう。"
+      }
+    },
+    {
+      "id": "dq-g1-D-02",
+      "unit": "えやずでかずをあらわす",
+      "aspect": "thinking",
+      "format": "twoStep",
+      "text": "えの ひょうで、バナナ ●●●、ぶどう ●。あわせて なんこ？",
+      "choices": [
+        "4こ",
+        "3こ",
+        "2こ"
+      ],
+      "answer": 0,
+      "reasons": [
+        "3こと 1こを あわせるから",
+        "バナナだけ かぞえるから",
+        "3から 1を ひくから"
+      ],
+      "reasonAnswer": 0,
+      "hints": {
+        "1": "どちらの ●も かぞえよう。",
+        "2": "どちらの ●も かぞえよう。"
+      },
+      "reasonHints": {
+        "1": "どちらの ●も かぞえよう。",
+        "2": "どちらの ●も かぞえよう。"
+      }
+    }
+  ]
+}

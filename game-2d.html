@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>さんすうアイランド｜2D開発版</title><link rel="stylesheet" href="src/2d/style.css"><link rel="stylesheet" href="src/2d/battle.css"><link rel="stylesheet" href="src/2d/encounters.css"><link rel="stylesheet" href="src/boss-widgets.css"></head>
+<body>
+<canvas id="world" aria-label="さんすうアイランドの2Dマップ"></canvas>
+<header id="hud" hidden><div><small>さんすうアイランド · 2D</small><strong id="place">はじまりの村</strong></div><div id="progress"></div><button id="menu">メニュー</button></header>
+<div id="modeNotice"></div><div id="target" hidden></div><div id="toast" role="status"></div>
+<nav id="controls" aria-label="移動と調べる" hidden><div id="stick" aria-label="指を動かして移動"><span id="knob"></span><small>いどう</small></div><button id="action">しらべる</button></nav>
+<section id="login" class="scrim"><div class="card loginCard">
+<p class="eyebrow">SAN SU ISLAND / FIELD NOTES 02</p><h1>さんすうアイランド<span>小さな一歩から、ぼうけんへ。</span></h1>
+<p class="pill">2D 開発版 · 1〜6年の6つの地方</p>
+<p id="loginNote">3D版とは別の記録です。6つの地方、24の洞窟とボス、12のおねがいごとを遊べます。</p>
+<p>じぶんの なまえを、3つの ことばで つくろう。<br><small>本名・学校・クラス・出席番号は使いません。</small></p>
+<div class="names"><select id="nameA" aria-label="どんな"></select><select id="nameB" aria-label="なに"></select><select id="nameC" aria-label="しょうごう"></select></div>
+<div class="row"><label>じぶんの学年 <select id="grade" aria-label="学年"><option value="1">1年</option><option value="2">2年</option><option value="3">3年</option><option value="4">4年</option><option value="5" selected>5年</option><option value="6">6年</option></select></label><button id="randomName">おまかせ</button></div>
+<button id="start" class="primary" disabled>じゅんび中…</button><p id="loadStatus" role="status">島のじゅんびを しています。問題は行く地方ごとに読み込みます。</p>
+<div id="resume"></div><p class="help">左のスティックで移動 → 右のボタンで調べる<br>PC：矢印 / WASD ＋ Space / Enter</p><a id="threeLink" href="index.html">3D版へ</a> · <a href="playtest.html">テストプレイの入口</a>
+</div></section>
+<section id="modal" class="scrim" role="dialog" aria-modal="true" aria-labelledby="modalTitle" hidden><div class="card modalCard"><div class="row"><h2 id="modalTitle"></h2><button id="closeModal" aria-label="閉じる">とじる</button></div><div id="modalBody"></div></div></section>
+<noscript>このゲームにはJavaScriptが必要です。</noscript>
+<script type="module" src="src/2d/game.js"></script></body></html>
