@@ -5,23 +5,29 @@ import { createTitles } from '../titles.js';
 import { isChecked } from '../review.js';
 import { stopSpeak, toPlain } from '../furigana.js';
 import { GATES, TREASURE, FOES, NPC, PORTAL, QUEST_NPC, DUNGEON_SPOTS, BOSS_SPOTS, move, enterCave, leaveCave, returnVillage,
-  openGate, claimTreasure, usable, freshState, loadState, saveState, profiles, logAttempt, dungeonId, changeRegion, bossRequirements } from './core.js';
+  openGate, claimTreasure, usable, freshState, loadState, saveState, profiles, logAttempt, dungeonId, bossRequirements,worldPoint,regionOrigin,FIELD,enterHouse,leaveHouse } from './core.js';
 import { createRenderer } from './render.js';
 import { mountQuestion } from './question-ui.js';
 import { paintEnemyPortrait } from './enemy-art.js';
 import { paintBossPortrait } from './boss-art.js';
 import { REGIONS, DOMAINS, regionOf, domainName } from './regions.js';
 import { mountBoss, mountQuest } from './encounters.js';
+import { createContactLatch } from './contacts.js';
+import { interactions } from './interactions.js';
+import { mountTitleAlbum } from './title-album.js';
+import { HOUSE_INFO,GIFT_ITEMS,grantHouseGift,mountHousePanel } from './houses.js';
+import { dungeonName } from './landmarks.js';
 
 const $ = id => document.getElementById(id);
 let state = null, titles, renderer, species = [], grades = [], bosses = [], ready = false, storage = null, disposeQuestion = null;
 let modalOpen = false, toastUntil = 0, sinceSave = 0, loadMs = 0, fps = 0, fpsTime = 0, fpsFrames = 0;
-let dungeon = null, entering = false, blockedFoe = null;
+let dungeon = null, entering = false;
+const contacts=createContactLatch(),readyGrades=new Set();
 const dungeonTasks=new Map(), regionTasks=new Map(), regionQuests=new Map(), bossTasks=new Map();
 const keys = new Set(), stick = { x: 0, y: 0, pointer: null };
-const foes = FOES.map(f => ({ ...f, cooldown: 0 }));
+const foes=REGIONS.flatMap(r=>FOES.map(f=>({...worldPoint(f,r.grade),grade:r.grade,cooldown:0})));
 const qm = createQuestionManager({ getState: () => state, allowDraft: () => PLAYTEST });
-const background = { ...freshState(NAME_PARTS.a[0] + NAME_PARTS.b[0] + NAME_PARTS.c[0]), x: 14, y: 29 };
+const background=freshState(NAME_PARTS.a[0]+NAME_PARTS.b[0]+NAME_PARTS.c[0],1);
 function button(label, fn, className = ''){ const b = document.createElement('button'); b.textContent = label; b.className = className; b.onclick = fn; return b; }
 function paragraph(text, cls = ''){ const p = document.createElement('p'); p.textContent = text; p.className = cls; return p; }
 function toast(text){ $('toast').textContent = text; toastUntil = performance.now() + 3800; }
@@ -60,9 +66,14 @@ async function ensureRegion(grade){
   if(!regionTasks.has(grade))regionTasks.set(grade,(async()=>{
     const [,quests]=await Promise.all([qm.load(grade),json(`./data/quests/g${grade}.json`)]);
     if(species.some(s=>qm.rawCount(`g${grade}_${s.id}`)===0))throw new Error(`${grade}年の問題を読み込めません。通信を確認して再読み込みしてください。`);
-    regionQuests.set(grade,quests.quests);
+    regionQuests.set(grade,quests.quests);readyGrades.add(grade);
   })().catch(e=>{regionTasks.delete(grade);throw e;}));
   return regionTasks.get(grade);
+}
+function preloadNeighbours(grade){
+  const col=(grade-1)%3;
+  const neighbours=[grade<=3?grade+3:grade-3,...(col>0?[grade-1]:[]),...(col<2?[grade+1]:[])];
+  for(const g of [grade,...neighbours])ensureRegion(g).catch(()=>{});
 }
 async function loadDungeon(grade=state?.regionGrade||5, domain=state?.activeDungeon||'A'){
   const id=`dungeon-g${grade}-${domain}`;
@@ -85,9 +96,11 @@ async function begin(name){
     const next = (storage && loadState(storage, PLAYTEST, name)) || freshState(name, Number($('grade').value));
     await ensureRegion(next.regionGrade);
     if (next.map === 'cave') await loadDungeon(next.regionGrade,next.activeDungeon);
-    state = next; foes.forEach(f => { f.cooldown = 0; }); blockedFoe = null;
+    state=next;foes.forEach(f=>{f.cooldown=0;});contacts.clear();
+    for(const t of interactions(state,foes,species))if(t.touching)contacts.block(t.key);
     $('login').hidden = true; $('hud').hidden = false; $('controls').hidden = false;
-    resetControls(); save(); toast(state.map === 'cave' ? 'どうくつの 続きから。北のとびらを めざそう。' : `${regionOf(state.regionGrade).name}へ ようこそ！ 世界地図からほかの地方へ行けるよ。`);
+    resetControls();save();preloadNeighbours(state.regionGrade);
+    toast(state.map==='cave'?'どうくつの 続きから。とびらに ふれてみよう。':state.map==='house'?'家の続きから。奥の人に はなしかけよう。':`${regionOf(state.regionGrade).name}へ ようこそ！ 道を歩くと、ほかの地方にも行けるよ。`);
   } catch (e) { $('loadStatus').textContent = e.message; }
   finally { entering = false; $('start').disabled = false; }
 }
@@ -102,41 +115,33 @@ $('modeNotice').textContent = PLAYTEST ? '2D試遊 · 問題は未確認です�
 if (PLAYTEST) { $('loginNote').textContent = '先生と試す版です。未レビュー問題を含み、答えに誤りがあるかもしれません。成績には使いません。3D版とは別の記録です。'; $('loginNote').className = 'warning'; }
 
 function target(){
-  if (!state) return null;
-  const near = (p, r = 1.8) => Math.hypot(state.x - p.x, state.y - p.y) < r;
-  if (state.map === 'cave'){
-    if (near({ x: 11.5, y: 61.3 }, 1.3)) return { kind: 'exit', label: '外へ もどる' };
-    if (state.doors < 5 && near({ x: 11.5, y: GATES[state.doors] + 1.5 }, 2)) return { kind: 'gate', label: `とびら ${state.doors + 1}を しらべる` };
-    if (near(TREASURE, 2)) return { kind: 'treasure', label: 'たからばこを あける' };
-    return null;
-  }
-  const cave=DUNGEON_SPOTS.find(p=>near(p,2.4));
-  if (cave) return { kind: 'cave', domain:cave.domain, label: `${domainName(state.regionGrade,cave.domain)}の どうくつへ はいる` };
-  const boss=BOSS_SPOTS.find(p=>near(p,2));
-  if(boss)return {kind:'boss',domain:boss.domain,label:`${domainName(state.regionGrade,boss.domain)}の ボスに あう`};
-  if(near(PORTAL,1.8))return {kind:'travel',label:'世界地図を ひらく'};
-  if(near(QUEST_NPC,1.7))return {kind:'quest',label:'おねがいごとを きく'};
-  if (near(NPC, 2)) return { kind: 'npc', label: 'あんないにんと はなす' };
-  const foe = foes.find(e => !e.cooldown && near(e, 1.8));
-  if (foe) return { kind: 'enemy', foe, label: `${species.find(s => s.id === foe.sid)?.name || 'まもの'}と たたかう` };
-  return null;
+  return interactions(state,foes,species).find(t=>t.manual)||null;
 }
-async function act(){
+async function act(t=target()){
   if (!state || modalOpen || entering) return;
-  const t = target();
-  if (!t) return toast('人・どうくつ・とびらに近づいて「しらべる」を押してね。');
-  if (t.kind === 'npc') return message('あんないにん', `ここは${state.regionGrade}年の${regionOf(state.regionGrade).name}。4つのどうくつと4体のボスがいるよ。敵2種類をそれぞれ15体たおして、同じ分野のどうくつをクリアするとボスに挑めるよ。村のおねがいごとにも挑戦してね。世界地図から1〜6年のどの地方にも行けるよ。`);
+  if(!t)return toast('家やどうくつの入口、とびら、人に 近づいてみよう。');
+  contacts.block(t.key);
+  if(t.kind==='npc')return message('あんないにん',`ここは${state.regionGrade}年の${regionOf(state.regionGrade).name}。道は6つの地方につながっているよ。家やどうくつの入口、とびらにふれると進めるよ。ボスには、その分野の敵2種類をそれぞれ15体たおし、その分野のどうくつをクリアすると挑めるよ。家の中ではヒントや依頼、プレゼントが待っているよ。`);
+  if(t.kind==='house'){enterHouse(state,t.id);resetControls();save();return toast(`${HOUSE_INFO[t.id].name}。奥の人に はなしかけよう。`);}
+  if(t.kind==='houseExit'){leaveHouse(state);resetControls();save();return;}
+  if(t.kind==='houseService')return showHouse();
   if(t.kind==='travel')return showWorldMap();
   if(t.kind==='quest')return showQuests();
   if(t.kind==='boss')return startBoss(t.domain);
-  if (t.kind === 'enemy') return startEnemy(t.foe);
+  if(t.kind==='enemy'){
+    if(!readyGrades.has(state.regionGrade)){
+      entering=true;resetControls();toast('この地方の問題を よみこんでいます…');
+      try{await ensureRegion(state.regionGrade);}catch{message('問題を読み込めませんでした','通信を確認して、もう一度しらべてね。');return;}finally{entering=false;}
+    }
+    return startEnemy(t.foe);
+  }
   if (t.kind === 'exit') { leaveCave(state); resetControls(); save(); return toast('外の世界に もどった！'); }
   if (t.kind === 'cave'){
     entering = true; resetControls(); toast('どうくつを よみこんでいます…');
     try {
-      const data = await loadDungeon(state.regionGrade,t.domain);
+      const [data]=await Promise.all([loadDungeon(state.regionGrade,t.domain),ensureRegion(state.regionGrade)]);
       if (!usable(data, PLAYTEST, isChecked)) return message('まだ はいれません', '先生が確認した問題がまだありません。先生と試すときは、テストプレイの入口から開いてください。');
-      enterCave(state,t.domain); save(); toast(`${data.name}。奥のとびらを しらべよう。`);
+      enterCave(state,t.domain); save(); toast(`${data.name}。奥のとびらに ふれてみよう。`);
     } catch { toast('どうくつを読み込めませんでした。通信を確認し、もう一度しらべてね。'); }
     finally { entering = false; }
     return;
@@ -148,7 +153,16 @@ async function act(){
     box.append(paragraph(first ? '5つのとびらを開けた！ 50コインを見つけたよ。' : 'このたからばこは、もう開けてあるよ。'), button('外へ もどる', () => { leaveCave(state); closeModal(); }, 'primary'));
   }
 }
-$('action').onclick = act;
+$('action').onclick=()=>act();
+function showHouse(){
+  const box=showModal(HOUSE_INFO[state.houseId].name);
+  disposeQuestion=mountHousePanel(box,{state,houseId:state.houseId,
+    onQuests:()=>showQuests(),onAlbum:showRecords,
+    onExit:()=>{leaveHouse(state);closeModal();},
+    onGift:grade=>{const result=grantHouseGift(state,grade);save();return result;},
+    onEquip:id=>{if(state.unlockedItems.includes(id)){state.item=id;save();}},
+  });
+}
 function startGate(){
   if (!dungeon || !usable(dungeon, PLAYTEST, isChecked)) return message('とびらの問題', '先生が確認した問題がまだありません。');
   const index = state.doors, step = dungeon.sequence[index];
@@ -168,7 +182,6 @@ function startGate(){
 function startEnemy(foe){
   const key=`g${state.regionGrade}_${foe.sid}`;
   if (!qm.hasPool(key)) return message('まだ たたかえません', '先生が確認した問題がまだありません。先生と試すときはテストプレイの入口から開いてください。');
-  blockedFoe = foe;
   const battle = { groups: new Set() }; let hp = grades.find(g=>g.grade===state.regionGrade)?.hp||3, hearts = 3;
   const name = species.find(s => s.id === foe.sid)?.name || 'まもの';
   function question(){
@@ -206,20 +219,23 @@ function startEnemy(foe){
   question();
 }
 function showWorldMap(){
-  const box=showModal('世界地図・地方へ行く');
-  box.append(paragraph('どの地方にも行けます。自分の学年より上は、むずかしい問題が出るよ。'));
-  const grid=document.createElement('div');grid.className='regionGrid';
+  const box=showModal('世界地図・いまいるところ');
+  box.append(paragraph('6つの地方は、ひとつの島につながっています。東西の道と南北の道を歩いて旅しよう。数字は問題の学年です。'));
+  const grid=document.createElement('div');grid.className='seamlessMap';grid.setAttribute('aria-label','上段は1・2・3年、下段は4・5・6年');
   for(const region of REGIONS){
     const cleared=Object.entries(state.dungeonProgress).filter(([id,p])=>id.startsWith(`dungeon-g${region.grade}-`)&&p.cleared).length;
-    const b=button(`${region.grade}年 ${region.name}\nどうくつ ${cleared}/4`,async()=>{
-      if(entering)return;entering=true;b.disabled=true;resetControls();
-      try{await ensureRegion(region.grade);changeRegion(state,region.grade);foes.forEach(f=>f.cooldown=0);blockedFoe=null;closeModal();toast(`${region.name}に ついた！`);}
-      catch(e){toast(e.message);b.disabled=false;}finally{entering=false;}
-    });b.style.borderColor=region.accent;grid.append(b);
+    const cell=document.createElement('div');cell.className='mapRegion';cell.style.background=`rgb(${region.ground.join(',')})`;
+    cell.append(paragraph(`${region.grade}年 ${region.name}`),paragraph(`どうくつ ${cleared}/4`));
+    if(region.grade===state.regionGrade){cell.classList.add('currentRegion');cell.append(paragraph('● いまここ','mapHere'));}
+    grid.append(cell);
   }
-  box.append(grid,paragraph('村の「世界地図」の看板や、メニューからいつでも旅立てます。'));
+  box.append(grid,paragraph('地図を閉じて、道を進もう。自分の学年より上の地方は、むずかしい問題が出るよ。'),button('歩いて ぼうけんを つづける',closeModal,'primary'));
 }
-function showQuests(preview=false){
+async function showQuests(preview=false){
+  if(!readyGrades.has(state.regionGrade)){
+    if(entering)return;entering=true;resetControls();
+    try{await ensureRegion(state.regionGrade);}catch{message('依頼を読み込めませんでした','通信を確認して、もう一度ためしてね。');return;}finally{entering=false;}
+  }
   const box=showModal(`${state.regionGrade}年の おねがいごと${preview?'（保存なし）':''}`);
   for(const q of regionQuests.get(state.regionGrade)||[]){
     const label=(state.clearedQuests.includes(q.id)?'✓ ':'')+toPlain(q.title);
@@ -255,7 +271,7 @@ async function startBoss(domain,preview=false){
     if(!preview&&!requirements.ok){
       box.append(paragraph('ボスに いどむには…'));
       [1,2].forEach((n,i)=>box.append(paragraph(`${requirements.counts[i]>=requirements.need?'✓':'・'} ${species.find(s=>s.id===domain+n)?.name} ${requirements.counts[i]}/${requirements.need}体`)));
-      box.append(paragraph(`${requirements.cleared?'✓':'・'} ${domainName(state.regionGrade,domain)}の どうくつをクリア`),button('ぼうけんに もどる',closeModal,'primary'));return;
+      box.append(paragraph(`${requirements.cleared?'✓':'・'} ${dungeonName(state.regionGrade,domain)}をクリア`),button('ぼうけんに もどる',closeModal,'primary'));return;
     }
     disposeQuestion=mountBoss(box,data,{ruby:state.ruby,grade:state.grade,trial:PLAYTEST,
       onAttempt:e=>{if(!preview){logAttempt(state,'ボス',e);save();}},
@@ -279,14 +295,14 @@ function openMenu(){
 function menuContents(){
   const box = showModal('ぼうけんの メニュー');
   box.append(paragraph(`${state.name} · ${state.grade}年 / ${state.coins}コイン`));
-  box.append(paragraph('持ち物のおためし（3Dの報酬・持ち物は変わりません）'));
+  box.append(paragraph('もちもの：各地方のプレゼント工房で、おまもりを集められるよ。'));
   const items = document.createElement('div'); items.className = 'itemOptions';
-  for (const [id, label] of [['lantern', 'ランタン'], ['wand', '星のつえ']]) items.append(button(label, () => { state.item = id; save(); menuContents(); }, state.item === id ? 'selected' : ''));
+  for(const [id,label] of [['lantern','ランタン'],['wand','星のつえ'],...GIFT_ITEMS.filter(i=>state.unlockedItems.includes(i.id)).map(i=>[i.id,i.name])])items.append(button(label,()=>{state.item=id;save();menuContents();},state.item===id?'selected':''));
   box.append(items);
   const grid = document.createElement('div'); grid.className = 'menuGrid';
-  grid.append(button('世界地図・地方へ行く',showWorldMap),button('この地方のおねがいごと',()=>showQuests()),button('ぼうしの色を かえる', () => { const colors = ['#eb8368', '#e4b551', '#739cb6', '#9c80b2', '#80a26a', '#e6cda1']; state.hat = colors[(colors.indexOf(state.hat) + 1) % colors.length]; save(); menuContents(); }),
+  grid.append(button('世界地図・いまいるところ',showWorldMap),button('この地方のおねがいごと',()=>showQuests()),button('ぼうしの色を かえる', () => { const colors = ['#eb8368', '#e4b551', '#739cb6', '#9c80b2', '#80a26a', '#e6cda1']; state.hat = colors[(colors.indexOf(state.hat) + 1) % colors.length]; save(); menuContents(); }),
     button(state.ruby ? 'ふりがな：あり' : 'ふりがな：なし', () => { state.ruby = !state.ruby; save(); menuContents(); }),
-    button('しょうごう・きろく', showRecords), button('村へ もどる', () => { returnVillage(state); closeModal(); }),
+    button('しょうごうアルバム',showRecords),button('村へ もどる',()=>{returnVillage(state);closeModal();}),
     button('ほぞんして 終わる', logout), button('ぼうけんに もどる', closeModal));
   box.append(grid, paragraph('カメラは自動でついてきます。回転・拡大操作はありません。洞窟のとびらごとに自動保存します。'));
   if(PLAYTEST)box.append(button('先生用：ボスを試す（保存なし）',teacherPreview));
@@ -294,11 +310,13 @@ function menuContents(){
 }
 $('menu').onclick = openMenu;
 function showRecords(){
-  const box = showModal('しょうごう・きろく');
-  box.append(paragraph('この端末だけの試遊記録です。成績には使いません。'), paragraph(`あそんだ時間：${Math.floor(state.playSec / 60)}分 / 洞窟のとびら：${state.doors}/5 / ${state.cleared ? 'たからばこクリア' : 'たからばこを さがそう'}`));
-  box.append(paragraph(`全地方のクリア：ボス ${state.defeatedBosses.length}/24 ・おねがいごと ${state.clearedQuests.length}/12 ・どうくつ ${Object.values(state.dungeonProgress).filter(p=>p.cleared).length}/24`));
-  for (const t of titles.list(state, state.regionGrade)) box.append(paragraph(`${t.enemy}：${t.count}体 ${t.name || ''}`));
-  box.append(button('メニューへ', menuContents));
+  const box=showModal('しょうごうアルバム');
+  const album=document.createElement('div');box.append(album);
+  disposeQuestion=mountTitleAlbum(album,{state,titles,onBack:menuContents});
+  const record=document.createElement('details');record.className='albumRecord';
+  const summary=document.createElement('summary');summary.textContent='ぼうけんの きろく（せんせいに みせる）';
+  record.append(summary,paragraph('この端末だけの試遊記録です。成績には使いません。'),paragraph(`あそんだ時間：${Math.floor(state.playSec/60)}分 / 記録中の解答 ${state.logs.length}回・正解 ${state.logs.filter(e=>e.correct).length}回（最新1000件まで）`),paragraph(`全地方のクリア：ボス ${state.defeatedBosses.length}/24 ・おねがいごと ${state.clearedQuests.length}/12 ・どうくつ ${Object.values(state.dungeonProgress).filter(p=>p.cleared).length}/24`));
+  box.append(record);
 }
 function logout(){
   if (!save()) return message('保存できませんでした', 'いまの記録は画面に残しています。ページを閉じる前に、先生に見せてください。');
@@ -338,19 +356,18 @@ function loop(now){
     if (!modalOpen && !entering){
       const x = stick.x + Number(keys.has('d') || keys.has('arrowright')) - Number(keys.has('a') || keys.has('arrowleft'));
       const y = stick.y + Number(keys.has('s') || keys.has('arrowdown')) - Number(keys.has('w') || keys.has('arrowup'));
+      const previousGrade=state.regionGrade;
       moving = !!(x || y); move(state, x, y, dt);
+      if(previousGrade!==state.regionGrade){save();preloadNeighbours(state.regionGrade);toast(`${state.regionGrade}年・${regionOf(state.regionGrade).name}に 入った！`);}
       foes.forEach(e => { e.cooldown = Math.max(0, e.cooldown - dt); });
-      if (blockedFoe && Math.hypot(state.x - blockedFoe.x, state.y - blockedFoe.y) > 2) blockedFoe = null;
-      if (state.map === 'field'){
-        const hit = foes.find(e => !e.cooldown && e !== blockedFoe && Math.hypot(state.x - e.x, state.y - e.y) < .8);
-        if (hit) { blockedFoe = hit; startEnemy(hit); }
-      }
+      const hit=contacts.update(interactions(state,foes,species));
+      if(hit)act(hit);
     }
     state.playSec += dt; sinceSave += dt; if (sinceSave >= 20) save();
     const t = target(); $('target').hidden = modalOpen;
-    $('target').textContent = t?.label || (state.map === 'cave' ? '北へ進み、とびらを しらべよう' : '東の道へ：まもの・どうくつを さがそう');
+    $('target').textContent=t?.label||(state.map==='cave'?'北へ進み、とびらに ふれよう':state.map==='house'?'奥の人に近づくと はなせるよ':'道を歩いて、ほかの地方にも 行ってみよう');
     $('action').textContent = t?.kind === 'enemy' ? 'たたかう' : t?.kind === 'cave' ? 'はいる' : 'しらべる';
-    $('place').textContent = state.map === 'cave' ? dungeon?.name||'どうくつ' : `${state.regionGrade}年・${regionOf(state.regionGrade).name}${state.x<23?'の村':''}`;
+    $('place').textContent=state.map==='cave'?dungeon?.name||'どうくつ':state.map==='house'?HOUSE_INFO[state.houseId].name:`${state.regionGrade}年・${regionOf(state.regionGrade).name}${state.x-regionOrigin(state.regionGrade).x<23?'の村':''}`;
     $('progress').textContent = `${state.coins}コイン · とびら ${state.doors}/5`;
   }
   renderer.draw(state || background, foes, now / 1000, dt, moving);

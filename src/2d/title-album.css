@@ -1,0 +1,37 @@
+.titleAlbum{display:grid;gap:12px;color:#213f38;font:inherit;min-width:0}
+.titleAlbum *{box-sizing:border-box}
+.titleAlbum button{font:inherit;min-height:48px;border:2px solid #bfd0bd;border-radius:12px;background:#fffdf5;color:#213f38;padding:7px 11px;cursor:pointer;touch-action:manipulation}
+.titleAlbum button:focus-visible{outline:4px solid #de9d2e;outline-offset:2px}
+.titleAlbum-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.titleAlbum h2{font-size:20px;margin:0;line-height:1.3}
+.titleAlbum-back{font-weight:800}
+.titleAlbum-total{margin-left:auto;background:#e8edd5;border-radius:20px;padding:7px 12px;font-weight:800;white-space:nowrap}
+.titleAlbum-tabs,.titleAlbum-filters{display:flex;gap:7px;overflow-x:auto;padding:3px;min-height:54px}
+.titleAlbum-tab{min-width:61px;flex-shrink:0}
+.titleAlbum-tab.is-selected,.titleAlbum-filter[aria-pressed="true"]{background:#226c58;color:#fff;border-color:#226c58;font-weight:800}
+.titleAlbum-filter{min-width:112px;flex-shrink:0}
+.titleAlbum-gradeTotal{font-size:14px;font-weight:700;margin:0;color:#526c5c}
+.titleAlbum-detail{border:2px solid #d8c67c;background:#fff8d7;border-radius:12px;padding:10px 12px;display:grid;gap:4px;line-height:1.45;min-height:58px}
+.titleAlbum-detail strong{font-size:15px}.titleAlbum-detail span{font-size:13px}
+.titleAlbum-body{display:grid;gap:14px;min-width:0}
+.titleAlbum-enemy{min-width:0;border:2px solid #d5dfc6;border-radius:15px;background:#f8faef;padding:10px}
+.titleAlbum-enemyHead{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+.titleAlbum-portrait{display:block;width:72px;height:54px;border-radius:10px;border:1px solid #b9cbae;background:#edf0dc}
+.titleAlbum-enemy h3{font-size:16px;line-height:1.3;margin:0}.titleAlbum-enemy p{font-size:13px;margin:3px 0 0}
+.titleAlbum-cards{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;min-width:0}
+.titleAlbum-card{min-height:150px!important;display:flex;flex-direction:column;gap:4px;text-align:center;align-items:center;padding:9px 5px!important;overflow-wrap:anywhere}
+.titleAlbum-card strong{font-size:13px;line-height:1.4}.titleAlbum-card small{font-size:12px;margin-top:auto}
+.titleAlbum-medal{flex-shrink:0;width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:#d9cfad;border:2px solid #8c8063;color:#fff;font-size:20px;font-weight:900}
+.titleAlbum-stage{font-size:12px;font-weight:800}
+.titleAlbum-card.is-earned{background:#fff9d9;border-color:#d4a53a}
+.titleAlbum-card.is-earned .titleAlbum-medal{background:linear-gradient(135deg,#f4d75a,#d78d27);border-color:#a86520;color:#294f3d}
+.titleAlbum-card.is-earned[data-stage="1"] .titleAlbum-medal{background:linear-gradient(135deg,#ecc299,#b78056)}
+.titleAlbum-card.is-earned[data-stage="2"] .titleAlbum-medal{background:linear-gradient(135deg,#f4f9f6,#a4b6b4);border-color:#778f91}
+.titleAlbum-card.is-earned[data-stage="4"] .titleAlbum-medal{background:linear-gradient(135deg,#d8f8f3,#5fbfae);border-color:#318773}
+.titleAlbum-card.is-earned[data-stage="5"] .titleAlbum-medal{background:linear-gradient(135deg,#f7defc,#b494dc);border-color:#7854a1;box-shadow:0 0 0 3px #edce8555}
+.titleAlbum-card.is-locked{background:#f1f1ed;border-color:#c7cbc3;color:#69736f}
+.titleAlbum-card.is-locked .titleAlbum-medal{background:#aeb4ae;border-color:#7f8881}
+.titleAlbum-empty{grid-column:1/-1;padding:8px;color:#64716a}
+.titleAlbum-card:hover{transform:translateY(-1px)}
+.albumRecord{margin-top:18px;padding:12px;border-top:2px solid #d5dfc6}.albumRecord summary{min-height:44px;cursor:pointer;font-weight:700}
+@media(max-width:620px){.titleAlbum-cards{grid-template-columns:repeat(3,minmax(0,1fr))}.titleAlbum-head h2{font-size:16px}.titleAlbum-enemy{padding:8px}}

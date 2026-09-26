@@ -1,0 +1,21 @@
+.si-house{display:grid;gap:12px;min-width:0;color:#213f38;font:16px/1.6 system-ui,-apple-system,'Yu Gothic',sans-serif}
+.si-house *{box-sizing:border-box}
+.si-house-header{display:flex;gap:12px;align-items:center;justify-content:space-between}
+.si-house h3{margin:0;font-size:23px}
+.si-house h4{font-size:18px;margin:16px 0 8px}
+.si-house-grade{background:#e8edd5;border-radius:25px;padding:5px 13px;font-weight:800;white-space:nowrap}
+.si-house p{margin:0 0 10px}
+.si-house-lead{font-weight:700}
+.si-house button{font:inherit;min-height:50px;border:2px solid #cddac5;border-radius:12px;background:#fffdf5;color:#213f38;padding:8px 14px;cursor:pointer;touch-action:manipulation}
+.si-house button:focus-visible{outline:4px solid #de9d2e;outline-offset:3px}
+.si-house button:active{transform:translateY(2px)}
+.si-house-topics,.si-house-actions,.si-house-items{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.si-house-topics .is-selected,.si-house-items .is-equipped{background:#e5edcf;border-color:#226c58;font-weight:800}
+.si-house-hint{background:#f1f3e2;border-left:5px solid #589276;border-radius:9px;padding:14px;min-height:88px;margin:12px 0 0!important}
+.si-house .si-house-primary{background:#226c58;border-color:#226c58;color:#fff;font-weight:800}
+.si-house-gift{background:#f6f1df;border:1px solid #e3d7a9;border-radius:15px;padding:16px}
+.si-house-gift-name{font-size:20px;font-weight:800}
+.si-house-owned{color:#226c58;font-weight:800}
+.si-house-status{min-height:20px;color:#a34730}
+.si-house-footer{display:flex;justify-content:flex-end}
+@media(max-width:560px){.si-house-actions,.si-house-items{grid-template-columns:1fr}.si-house h3{font-size:20px}}

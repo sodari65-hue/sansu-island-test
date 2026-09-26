@@ -1,6 +1,20 @@
-import { FIELD, CAVE, GATES, TREASURE, HOUSES, NPC, PORTAL, QUEST_NPC, DUNGEON_SPOTS, BOSS_SPOTS, tile, hash } from './core.js';
-import { regionOf, domainName } from './regions.js';
+import { FIELD,CAVE,HOUSE_ROOM,GATES,TREASURE,HOUSES,NPC,PORTAL,QUEST_NPC,DUNGEON_SPOTS,BOSS_SPOTS,tile,hash,gradeAt,regionOrigin,REGION_SIZE } from './core.js';
+import { REGIONS,regionOf,domainName } from './regions.js';
 import { paintEnemy } from './enemy-art.js';
+import { dungeonName } from './landmarks.js';
+import { HOUSE_INFO } from './houses.js';
+
+function groundAt(x,y){
+  const blend=(a,b,t)=>a.map((v,i)=>v*(1-t)+b[i]*t);
+  const row=r=>{
+    if(x<66)return regionOf(1+r*3).ground;
+    if(x<78)return blend(regionOf(1+r*3).ground,regionOf(2+r*3).ground,(x-66)/12);
+    if(x<138)return regionOf(2+r*3).ground;
+    if(x<150)return blend(regionOf(2+r*3).ground,regionOf(3+r*3).ground,(x-138)/12);
+    return regionOf(3+r*3).ground;
+  };
+  return y<38?row(0):y>50?row(1):blend(row(0),row(1),(y-38)/12);
+}
 
 // All art is drawn locally in Canvas2D. No engine, texture download or 3D context.
 export function createRenderer(canvas){
@@ -47,6 +61,18 @@ export function createRenderer(canvas){
       ctx.save(); ctx.translate(28, -46); ctx.fillStyle = '#f6cc63'; ctx.beginPath();
       for (let i = 0; i < 10; i++){ const a = -Math.PI / 2 + i * Math.PI / 5, r = i % 2 ? 5 : 12; const px = Math.cos(a) * r, py = Math.sin(a) * r; if (!i) ctx.moveTo(px, py); else ctx.lineTo(px, py); }
       ctx.closePath(); ctx.fill(); oval(-1, -2, 3, 3, '#fff2a5'); ctx.restore();
+    } else if(!npc && ['flower','leaf','shell','crystal','flame','star'].includes(state.item)){
+      line([[21,-18],[26,-35]],'#796041',4);
+      ctx.save();ctx.translate(27,-42);
+      const colors={flower:'#e997aa',leaf:'#6eab67',shell:'#eee0b8',crystal:'#8caed3',flame:'#e99a55',star:'#e2c473'};
+      ctx.fillStyle=colors[state.item];
+      if(state.item==='flower'){for(let i=0;i<6;i++)oval(Math.cos(i*Math.PI/3)*7,Math.sin(i*Math.PI/3)*7,5,5,colors.flower);oval(0,0,5,5,'#fff0a1');}
+      else if(state.item==='leaf'){ctx.rotate(-.4);oval(0,0,8,13,colors.leaf);line([[0,-9],[0,8]],'#e5efb6',2);}
+      else if(state.item==='shell'){ctx.beginPath();ctx.arc(0,1,12,Math.PI,Math.PI*2);ctx.lineTo(0,9);ctx.closePath();ctx.fill();for(const x of [-8,0,8])line([[0,7],[x,-6]],'#bc9970',1.5);}
+      else if(state.item==='crystal'){ctx.beginPath();ctx.moveTo(0,-15);ctx.lineTo(10,0);ctx.lineTo(0,12);ctx.lineTo(-10,0);ctx.closePath();ctx.fill();line([[0,-12],[0,9]],'#e0f6ff',2);}
+      else if(state.item==='flame'){ctx.beginPath();ctx.moveTo(0,-15);ctx.bezierCurveTo(-3,-3,-13,0,-8,8);ctx.bezierCurveTo(2,18,17,4,0,-15);ctx.fill();oval(1,5,4,7,'#fff0a3');}
+      else{ctx.beginPath();for(let i=0;i<10;i++){const a=-Math.PI/2+i*Math.PI/5,r=i%2?5:12;i?ctx.lineTo(Math.cos(a)*r,Math.sin(a)*r):ctx.moveTo(Math.cos(a)*r,Math.sin(a)*r);}ctx.closePath();ctx.fill();}
+      ctx.restore();
     } else if (!npc){
       line([[23, -18], [23, -9]], '#5b5942', 3);
       const glow = ctx.createRadialGradient(23, 1, 1, 23, 1, 30); glow.addColorStop(0, '#ffe49980'); glow.addColorStop(1, '#ffe49900');
@@ -61,31 +87,36 @@ export function createRenderer(canvas){
   }
   function draw(state, foes, now, dt, moving){
     if (!width || width !== canvas.clientWidth || height !== canvas.clientHeight) resize();
-    const map = state.map, bounds = map === 'cave' ? CAVE : FIELD;
+    const map=state.map,bounds=map==='cave'?CAVE:map==='house'?HOUSE_ROOM:FIELD;
     const region=regionOf(state.regionGrade||5);
     const clampCam = (p, size, view) => view >= size ? size / 2 : Math.max(view / 2, Math.min(size - view / 2, p));
     const tx = clampCam(state.x, bounds.width, width / unit), ty = clampCam(state.y - .5, bounds.height, height / unit);
     if (camera.map !== map) { camera.x = tx; camera.y = ty; camera.map = map; }
     camera.x += (tx - camera.x) * Math.min(1, dt * 10); camera.y += (ty - camera.y) * Math.min(1, dt * 10);
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    rect(0, 0, width, height, map === 'cave' ? '#242e39' : region.water);
+    rect(0,0,width,height,map==='cave'?'#242e39':map==='house'?'#514a3d':region.water);
     const ox = width / 2 - camera.x * unit, oy = height / 2 - camera.y * unit;
     const left = Math.max(0, Math.floor(-ox / unit) - 1), top = Math.max(0, Math.floor(-oy / unit) - 2);
     const right = Math.min(bounds.width, Math.ceil((width - ox) / unit) + 1), bottom = Math.min(bounds.height, Math.ceil((height - oy) / unit) + 3);
     const props = [];
     for (let y = top; y < bottom; y++) for (let x = left; x < right; x++){
-      const type = tile(map, x, y, state.doors, region.grade), px = ox + x * unit, py = oy + y * unit, n = hash(x, y);
+      const tileRegion=map==='field'?regionOf(gradeAt(x,y)):region;
+      const type = tile(map, x, y, state.doors, tileRegion.grade), px = ox + x * unit, py = oy + y * unit, n = hash(x, y);
       let color;
-      if (map === 'cave') color = type === 'wall' ? '#293644' : (n < .5 ? '#656b6b' : '#696f6e');
-      else if (type === 'water'||type==='pond') color = region.water;
+      if(map==='house')color=type==='wall'?'#816e51':n<.5?'#d0b78a':'#c5ab7e';
+      else if (map === 'cave') color = type === 'wall' ? '#293644' : (n < .5 ? '#656b6b' : '#696f6e');
+      else if (type === 'water'||type==='pond') color = tileRegion.water;
       else if (type === 'path') color = n < .5 ? '#d9c798' : '#decca0';
       else if (type === 'cliff') color = '#797966';
       else if(type==='lava')color=n<.5?'#d87948':'#bf643f';
       else if(type==='ice')color=n<.5?'#a4cbd3':'#b1d7dd';
       else if(type==='rock')color=n<.5?'#94988b':'#8a9081';
-      else { const light=(n-.5)*9; color = `rgb(${region.ground.map(c=>Math.round(c+light)).join(',')})`; }
+      else { const light=(n-.5)*9; color = `rgb(${groundAt(x,y).map(c=>Math.round(c+light)).join(',')})`; }
       rect(px, py, unit + .5, unit + .5, color);
-      if (map === 'cave'){
+      if(map==='house'){
+        if(type==='floor')rect(px+2,py+unit-2,unit-4,1,'#a58a6166');
+        if(type==='furniture'){rect(px+2,py+5,unit-4,unit-9,'#826140');rect(px+3,py+7,unit-6,5,'#c3a36d');for(let i=0;i<4;i++)rect(px+8+i*8,py+16,5,20,['#729989','#d19c72','#a0a8c0','#d0bd73'][i]);}
+      }else if (map === 'cave'){
         if (type === 'wall'){ rect(px + 2, py + 3, unit - 4, unit - 5, '#334451'); rect(px + 2, py + 3, unit - 4, 4, '#42515a'); }
         else { rect(px + 4, py + 4, unit - 8, 1, '#87908755'); if (n < .25) line([[px + 8, py + 13], [px + 13, py + 18], [px + 9, py + 22]], '#505d60'); }
       } else if (['water','pond','ice','lava'].includes(type)) { line([[px + 7, py + 20], [px + 20, py + 22], [px + 34, py + 20]], '#f2e6b477', 2); }
@@ -93,35 +124,49 @@ export function createRenderer(canvas){
         rect(px + unit * n, py + 14, 3, 5, '#73935c');
         if (n > .82 && x < 42){ oval(px + 16, py + 24, 3, 3, '#f9e5b1'); oval(px + 28, py + 36, 2, 2, '#fff7da'); }
       }
-      if (type === 'tree') props.push({ y: y + 1, draw: () => tree(px + unit / 2, py + unit, region) });
+      if (type === 'tree') props.push({ y: y + 1, draw: () => tree(px + unit / 2, py + unit, tileRegion) });
     }
     const at = p => [ox + p.x * unit, oy + p.y * unit];
     if (map === 'field'){
-      for (const h of HOUSES) props.push({ y: h.y + h.h, draw: () => {
-        const x = ox + h.x * unit, y = oy + h.y * unit, w = h.w * unit, hgt = h.h * unit;
+      for(const region of REGIONS){
+      const origin=regionOrigin(region.grade);
+      if(origin.x>right||origin.x+REGION_SIZE.width<left||origin.y>bottom||origin.y+REGION_SIZE.height<top)continue;
+      const rx=ox+origin.x*unit,ry=oy+origin.y*unit;
+      const at=p=>[rx+p.x*unit,ry+p.y*unit];
+      for (const h of HOUSES) props.push({ y: origin.y+h.y+h.h, draw: () => {
+        const x = rx + h.x * unit, y = ry + h.y * unit, w = h.w * unit, hgt = h.h * unit;
         rect(x + 9, y + hgt - 4, w, 14, '#45634433'); rect(x, y, w, hgt, '#efd7a2'); rect(x + w - 17, y, 17, hgt, '#d4b982');
         rect(x + w / 2 - 13, y + hgt - 51, 26, 51, '#775a3b'); rect(x + 18, y + hgt - 49, 30, 24, '#749990');
         line([[x + 33, y + hgt - 49], [x + 33, y + hgt - 25]], '#f6e4b0', 3);
         ctx.fillStyle = '#b5674f'; ctx.beginPath(); ctx.moveTo(x - 10, y + 15); ctx.lineTo(x + w / 2, y - 35); ctx.lineTo(x + w + 10, y + 15); ctx.closePath(); ctx.fill();
         line([[x - 10, y + 15], [x + w + 10, y + 15]], '#865541', 5);
+        label(HOUSE_INFO[h.id]?.name||'いえ',x+w/2,y-49);
+        oval(x+w/2,y+hgt+10,17,7,'#f7d98da8');
       }});
       for(const spot of DUNGEON_SPOTS){
         const [ex,ey]=at(spot);
         oval(ex, ey - 33, 60, 48, region.theme==='snow'?'#b5c9c8':'#727562'); oval(ex, ey - 23, 36, 38, '#3b4440'); oval(ex, ey - 19, 25, 30, '#1d3335');
-        rect(ex - 23, ey - 19, 46, 31, '#1d3335'); label(`${domainName(region.grade,spot.domain)}の どうくつ`, ex, ey - 88);
+        rect(ex - 23, ey - 19, 46, 31, '#1d3335'); label(dungeonName(region.grade,spot.domain), ex, ey - 88);
       }
       for(const spot of BOSS_SPOTS){
         const [x,y]=at(spot);rect(x-35,y-62,70,65,'#7c7c6e');rect(x-44,y-68,21,71,'#a5a28c');rect(x+23,y-68,21,71,'#a5a28c');
         rect(x-18,y-35,36,39,'#384c49');rect(x-31,y-88,4,26,'#5b675c');rect(x-27,y-88,26,14,region.accent);
         label(`${domainName(region.grade,spot.domain)}の ボス`,x,y-106);
       }
-      props.push({ y: NPC.y, draw: () => { const [x, y] = at(NPC); mushroom(x, y, { facing: 1 }, now, false, true); label('あんないにん', x, y - 77); } });
-      props.push({y:QUEST_NPC.y,draw:()=>{const[x,y]=at(QUEST_NPC);mushroom(x,y,{facing:-1},now,false,true);label('おねがいごと',x,y-77);}});
+      props.push({ y: origin.y+NPC.y, draw: () => { const [x, y] = at(NPC); mushroom(x, y, { facing: 1 }, now, false, true); label('あんないにん', x, y - 77); } });
+      props.push({y:origin.y+QUEST_NPC.y,draw:()=>{const[x,y]=at(QUEST_NPC);mushroom(x,y,{facing:-1},now,false,true);label('おねがいごと',x,y-77);}});
       const[px,py]=at(PORTAL);rect(px-4,py-36,8,40,'#7b6247');rect(px-27,py-48,54,24,region.accent);label('世界地図',px,py-65);
-      for (const e of foes) if (!e.cooldown) props.push({ y: e.y, draw: () => { const [x, y] = at(e); paintEnemy(ctx, e.sid, x, y, now + e.x, .85, region.grade); } });
-      label(`${region.name}の村`, ox + 14 * unit, oy + 22 * unit);
-      label(`${region.grade}年の たんけんみち →`, ox + 28 * unit, oy + 25 * unit);
-      label('↑ どうくつ', ox + 53 * unit, oy + 24 * unit);
+      label(`${region.name}の村`,rx+14*unit,ry+21*unit);
+      label(`${region.grade}年の たんけんみち →`,rx+28*unit,ry+25*unit);
+      if(region.grade%3!==0)label(`→ ${regionOf(region.grade+1).name}`,rx+68*unit,ry+26*unit);
+      if(region.grade<=3)label(`↓ ${regionOf(region.grade+3).name}`,rx+14*unit,ry+41*unit);
+      }
+      for(const e of foes)if(!e.cooldown&&e.x>left-2&&e.x<right+2&&e.y>top-2&&e.y<bottom+2)props.push({y:e.y,draw:()=>{const[x,y]=at(e);paintEnemy(ctx,e.sid,x,y,now+e.x,.85,e.grade);}});
+    }else if(map==='house'){
+      const[cx,cy]=at({x:7.5,y:7.6});rect(cx-unit*2,cy-unit,unit*4,unit*2,region.accent+'88');
+      label(HOUSE_INFO[state.houseId]?.name||'いえのなか',cx,oy+1.5*unit);
+      props.push({y:HOUSE_ROOM.host.y,draw:()=>{const[x,y]=at(HOUSE_ROOM.host);mushroom(x,y,{facing:1},now,false,true);label('ちかづいて はなそう',x,y-75);}});
+      const[ex,ey]=at(HOUSE_ROOM.exit);rect(ex-30,ey-12,60,30,'#f8df97');label('↓ そとへ',ex,ey-27);
     } else {
       GATES.forEach((gy, i) => {
         const x = ox + 10 * unit, y = oy + gy * unit;
